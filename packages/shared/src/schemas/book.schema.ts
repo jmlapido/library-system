@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+export const BookConditionSchema = z.enum(['excellent', 'good', 'fair', 'poor']);
+export type BookCondition = z.infer<typeof BookConditionSchema>;
+
 export const CreateBookSchema = z.object({
   isbn: z.string().max(20).optional(),
   title: z.string().min(1).max(500),
@@ -19,7 +22,7 @@ export const CreateBookSchema = z.object({
   seriesNumber: z.number().int().positive().optional(),
   deweyDecimal: z.string().max(50).optional(),
   firstCopyBarcode: z.string().min(1).max(100),
-  firstCopyCondition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+  firstCopyCondition: BookConditionSchema.optional(),
   firstCopyLocation: z.string().max(100).optional(),
 });
 
@@ -27,14 +30,14 @@ export const UpdateBookSchema = CreateBookSchema.omit({ firstCopyBarcode: true, 
 
 export const AddCopySchema = z.object({
   barcode: z.string().min(1).max(100),
-  condition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+  condition: BookConditionSchema.optional(),
   location: z.string().max(100).optional(),
   acquisitionDate: z.string().date().optional(),
   purchaseCost: z.number().positive().optional(),
 });
 
 export const UpdateCopySchema = z.object({
-  condition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+  condition: BookConditionSchema.optional(),
   location: z.string().max(100).optional(),
   status: z.enum(['available', 'checked_out', 'returned', 'being_processed', 'shelved', 'damaged', 'lost']).optional(),
 });
