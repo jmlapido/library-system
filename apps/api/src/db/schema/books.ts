@@ -1,6 +1,6 @@
 import {
   pgTable, uuid, varchar, text, integer, boolean,
-  timestamp, pgEnum, numeric, date,
+  timestamp, pgEnum, numeric,
 } from 'drizzle-orm/pg-core';
 import { schools } from './schools.js';
 
@@ -47,9 +47,10 @@ export const bookInventory = pgTable('book_inventory', {
   status: bookStatusEnum('status').notNull().default('available'),
   copyNumber: integer('copy_number'),
   schoolId: uuid('school_id').notNull().references(() => schools.id),
-  acquisitionDate: date('acquisition_date'),
+  acquisitionDate: timestamp('acquisition_date'),
   purchaseCost: numeric('purchase_cost', { precision: 10, scale: 2 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export type Book = typeof books.$inferSelect;
