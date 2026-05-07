@@ -10,6 +10,9 @@ export default defineConfig({
       REDIS_URL: 'redis://localhost:6379',
       MEILISEARCH_HOST: 'http://localhost:7700',
       MEILISEARCH_API_KEY: 'masterKey',
+      SENDGRID_API_KEY: 'SG.test-key-for-unit-tests',
+      EMAIL_FROM: 'noreply@test.com',
+      APP_URL: 'http://localhost:3000',
     },
   },
 });
