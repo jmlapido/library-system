@@ -7,6 +7,7 @@ import { login } from '../services/auth.service.js';
 
 let schoolId: string;
 let studentUserId: string;
+let librarianUserId: string;
 
 beforeAll(async () => {
   const [school] = await db.insert(schools).values({ name: 'Auth Service Test School' }).returning();
@@ -21,14 +22,16 @@ beforeAll(async () => {
   }).returning();
   studentUserId = student!.id;
 
-  await db.insert(users).values({
+  const [librarian] = await db.insert(users).values({
     fullName: 'Test Librarian',
     email: 'lib@svc.test',
     passwordHash: await bcrypt.hash('password123', 12),
     role: 'librarian',
     schoolId,
     emailVerified: true,
-  });
+    approvalStatus: 'approved',
+  }).returning();
+  librarianUserId = librarian!.id;
 });
 
 afterAll(async () => {
@@ -64,5 +67,50 @@ describe('login()', () => {
     await expect(login({ identifier: 'STU_SVC_001', credential: '1234' }))
       .rejects.toMatchObject({ code: 'ACCOUNT_INACTIVE' });
     await db.update(users).set({ isActive: true }).where(eq(users.id, studentUserId));
+  });
+
+  it('throws APPROVAL_PENDING when approvalStatus is pending', async () => {
+    await db.update(users)
+      .set({ approvalStatus: 'pending', isActive: false })
+      .where(eq(users.id, librarianUserId));
+    try {
+      await expect(
+        login({ identifier: 'lib@svc.test', credential: 'password123' })
+      ).rejects.toMatchObject({ code: 'APPROVAL_PENDING' });
+    } finally {
+      await db.update(users)
+        .set({ approvalStatus: 'approved', isActive: true })
+        .where(eq(users.id, librarianUserId));
+    }
+  });
+
+  it('throws ACCOUNT_INACTIVE when approvalStatus is rejected', async () => {
+    await db.update(users)
+      .set({ approvalStatus: 'rejected', isActive: false })
+      .where(eq(users.id, librarianUserId));
+    try {
+      await expect(
+        login({ identifier: 'lib@svc.test', credential: 'password123' })
+      ).rejects.toMatchObject({ code: 'ACCOUNT_INACTIVE' });
+    } finally {
+      await db.update(users)
+        .set({ approvalStatus: 'approved', isActive: true })
+        .where(eq(users.id, librarianUserId));
+    }
+  });
+
+  it('throws EMAIL_NOT_VERIFIED when emailVerified is false', async () => {
+    await db.update(users)
+      .set({ emailVerified: false })
+      .where(eq(users.id, librarianUserId));
+    try {
+      await expect(
+        login({ identifier: 'lib@svc.test', credential: 'password123' })
+      ).rejects.toMatchObject({ code: 'EMAIL_NOT_VERIFIED' });
+    } finally {
+      await db.update(users)
+        .set({ emailVerified: true })
+        .where(eq(users.id, librarianUserId));
+    }
   });
 });

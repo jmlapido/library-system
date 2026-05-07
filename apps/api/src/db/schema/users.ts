@@ -9,6 +9,12 @@ export const userRoleEnum = pgEnum('user_role', [
   'admin',
 ]);
 
+export const approvalStatusEnum = pgEnum('approval_status', [
+  'pending',
+  'approved',
+  'rejected',
+]);
+
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).unique(),
@@ -21,11 +27,13 @@ export const users = pgTable('users', {
   schoolId: uuid('school_id').notNull().references(() => schools.id),
   isActive: boolean('is_active').default(true).notNull(),
   emailVerified: boolean('email_verified').default(false).notNull(),
+  approvalStatus: approvalStatusEnum('approval_status').default('approved').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => [
   index('users_school_id_idx').on(table.schoolId),
   index('users_role_idx').on(table.role),
+  index('users_approval_status_idx').on(table.approvalStatus),
 ]);
 
 export type User = typeof users.$inferSelect;
