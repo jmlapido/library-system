@@ -89,8 +89,12 @@ export async function setPasswordHandler(c: Context) {
  */
 export async function listPending(c: Context) {
   const user = c.get('user') as AccessTokenPayload;
-  const data = await staffService.listPendingStaff(user.schoolId);
-  return c.json({ success: true, data });
+  try {
+    const data = await staffService.listPendingStaff(user.schoolId);
+    return c.json({ success: true, data });
+  } catch (err) {
+    return errorResponse(c, err);
+  }
 }
 
 /**
