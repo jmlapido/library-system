@@ -73,8 +73,8 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 22 | `circulation.service.ts` | Checkout, return (3-stage: `returned` → `being_processed` → `shelved`), renewal, hold queue with position tracking | ⬜ |
-| 23 | Circulation HTTP routes | `POST /api/v1/circulation/checkout`, `/return`, `/renew`; `GET /api/v1/circulation/holds`; shelving queue endpoints | ⬜ |
+| 22 | `circulation.service.ts` | Checkout, return (3-stage: `returned` → `being_processed` → `shelved`), renewal, hold queue with position tracking | ✅ |
+| 23 | Circulation HTTP routes | `POST /api/v1/circulation/checkout`, `/return`, `/return/advance`, `/renew`, `/holds`; `DELETE /holds/:id`; `GET /my/checkouts`, `/my/holds`, `/shelving-queue` | ✅ |
 
 ---
 
@@ -162,8 +162,8 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | Metric | Count |
 |--------|-------|
-| Tasks completed (Group A–C + Tasks 20–21) | **21** |
-| Tasks remaining Phase 1 (Group D–I) | **18** |
+| Tasks completed (Groups A–E) | **23** |
+| Tasks remaining Phase 1 (Groups F–I) | **16** |
 | Test files | 9 |
 | Tests passing | 53 |
 | API endpoints live | 10 |
