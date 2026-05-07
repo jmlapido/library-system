@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, integer, boolean, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, integer, boolean, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
 import { schools } from './schools.js';
 
 export const userRoleEnum = pgEnum('user_role', [
@@ -23,7 +23,10 @@ export const users = pgTable('users', {
   emailVerified: boolean('email_verified').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (table) => [
+  index('users_school_id_idx').on(table.schoolId),
+  index('users_role_idx').on(table.role),
+]);
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

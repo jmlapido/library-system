@@ -1,6 +1,6 @@
 import {
   pgTable, uuid, varchar, text, integer, boolean,
-  timestamp, pgEnum, numeric,
+  timestamp, pgEnum, numeric, index,
 } from 'drizzle-orm/pg-core';
 import { schools } from './schools.js';
 
@@ -36,7 +36,9 @@ export const books = pgTable('books', {
   isDeleted: boolean('is_deleted').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (table) => [
+  index('books_school_id_idx').on(table.schoolId),
+]);
 
 export const bookInventory = pgTable('book_inventory', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -51,7 +53,11 @@ export const bookInventory = pgTable('book_inventory', {
   purchaseCost: numeric('purchase_cost', { precision: 10, scale: 2 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (table) => [
+  index('book_inventory_book_id_idx').on(table.bookId),
+  index('book_inventory_school_id_idx').on(table.schoolId),
+  index('book_inventory_status_idx').on(table.status),
+]);
 
 export type Book = typeof books.$inferSelect;
 export type NewBook = typeof books.$inferInsert;
