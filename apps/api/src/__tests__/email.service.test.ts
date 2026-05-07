@@ -54,4 +54,13 @@ describe('email.service', () => {
       expect(call.text).toContain('Juan Dela Cruz');
     });
   });
+
+  describe('error handling', () => {
+    it('throws AppError when sgMail.send rejects', async () => {
+      (sgMail.send as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('SendGrid unavailable'));
+      await expect(
+        sendVerificationEmail('staff@school.com', 'http://localhost:3000/verify?token=abc')
+      ).rejects.toMatchObject({ code: 'EMAIL_SEND_FAILED' });
+    });
+  });
 });

@@ -4,6 +4,18 @@ import { AppError } from './auth.service.js';
 const FROM = process.env.EMAIL_FROM ?? 'noreply@libraryms.com';
 
 /**
+ * Escape special HTML characters to prevent injection via user-supplied strings.
+ * @param str - Raw string to escape
+ */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
  * Lazily initialize SendGrid with API key.
  * Called inside each function to avoid module-load crash during tests.
  */
@@ -28,8 +40,8 @@ export async function sendVerificationEmail(to: string, verifyUrl: string): Prom
       text: `Your account has been approved. Verify your email:\n\n${verifyUrl}\n\nThis link expires in 24 hours.`,
       html: `<p>Your account has been approved.</p><p><a href="${verifyUrl}">Verify your email</a></p><p>This link expires in 24 hours.</p>`,
     });
-  } catch {
-    throw new AppError('EMAIL_SEND_FAILED', 'Failed to send verification email');
+  } catch (err) {
+    throw new AppError('EMAIL_SEND_FAILED', `Failed to send verification email: ${(err as Error).message ?? 'unknown error'}`);
   }
 }
 
@@ -47,10 +59,10 @@ export async function sendStaffInviteEmail(to: string, inviteUrl: string, fullNa
       from: FROM,
       subject: 'You have been invited to LibraMS',
       text: `Hi ${fullName},\n\nYou have been added to LibraMS. Set your password to get started:\n\n${inviteUrl}\n\nThis link expires in 72 hours.`,
-      html: `<p>Hi ${fullName},</p><p>You have been added to LibraMS.</p><p><a href="${inviteUrl}">Set your password</a></p><p>This link expires in 72 hours.</p>`,
+      html: `<p>Hi ${escapeHtml(fullName)},</p><p>You have been added to LibraMS.</p><p><a href="${inviteUrl}">Set your password</a></p><p>This link expires in 72 hours.</p>`,
     });
-  } catch {
-    throw new AppError('EMAIL_SEND_FAILED', 'Failed to send invite email');
+  } catch (err) {
+    throw new AppError('EMAIL_SEND_FAILED', `Failed to send invite email: ${(err as Error).message ?? 'unknown error'}`);
   }
 }
 
@@ -67,9 +79,9 @@ export async function sendRejectionEmail(to: string, fullName: string): Promise<
       from: FROM,
       subject: 'Your LibraMS account request',
       text: `Hi ${fullName},\n\nYour account request was not approved. Please contact your school administrator for assistance.`,
-      html: `<p>Hi ${fullName},</p><p>Your account request was not approved. Please contact your school administrator for assistance.</p>`,
+      html: `<p>Hi ${escapeHtml(fullName)},</p><p>Your account request was not approved. Please contact your school administrator for assistance.</p>`,
     });
-  } catch {
-    throw new AppError('EMAIL_SEND_FAILED', 'Failed to send rejection email');
+  } catch (err) {
+    throw new AppError('EMAIL_SEND_FAILED', `Failed to send rejection email: ${(err as Error).message ?? 'unknown error'}`);
   }
 }
