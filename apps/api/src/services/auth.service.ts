@@ -18,7 +18,7 @@ export class AppError extends Error {
  * Email identifiers use password; all others use student ID + PIN.
  * @param input - Validated login payload (identifier + credential).
  * @returns Access token, raw refresh token, and public user fields.
- * @throws AppError with code INVALID_CREDENTIALS or ACCOUNT_INACTIVE.
+ * @throws AppError with code INVALID_CREDENTIALS, ACCOUNT_INACTIVE, APPROVAL_PENDING, or EMAIL_NOT_VERIFIED.
  */
 export async function login(input: LoginInput) {
   const isEmail = input.identifier.includes('@');
@@ -30,6 +30,7 @@ export async function login(input: LoginInput) {
     .limit(1);
 
   if (!user) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+  if (user.approvalStatus === 'pending') throw new AppError('APPROVAL_PENDING', 'Account awaiting admin approval');
   if (!user.isActive) throw new AppError('ACCOUNT_INACTIVE', 'Account is inactive');
 
   const hashToCheck = isEmail ? user.passwordHash : user.pinHash;
@@ -37,6 +38,8 @@ export async function login(input: LoginInput) {
 
   const valid = await bcrypt.compare(input.credential, hashToCheck);
   if (!valid) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+
+  if (isEmail && !user.emailVerified) throw new AppError('EMAIL_NOT_VERIFIED', 'Please verify your email address before logging in');
 
   const accessToken = signAccessToken({ sub: user.id, role: user.role, schoolId: user.schoolId });
   const rawRefreshToken = signRefreshToken();
