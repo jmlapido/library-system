@@ -4,14 +4,8 @@ import { db } from '../db/index.js';
 import { users, refreshTokens } from '../db/schema/index.js';
 import { signAccessToken, signRefreshToken } from '../lib/jwt.js';
 import type { LoginInput } from 'shared';
-
-/** Structured error with a machine-readable code for HTTP mapping. */
-export class AppError extends Error {
-  constructor(public readonly code: string, message: string) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
+import { AppError } from '../utils/errors.js';
+export { AppError };
 
 /**
  * Authenticate a user via auto-detected credential type.

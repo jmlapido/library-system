@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { authRouter } from './routes/auth.js';
 import { staffAuthRouter, staffAdminRouter } from './routes/staff.js';
+import { catalogRouter } from './routes/catalog.js';
 
 export const app = new Hono();
 
@@ -28,6 +29,7 @@ app.get('/health', (c) =>
 app.route('/api/v1/auth', authRouter);
 app.route('/api/v1/auth', staffAuthRouter);
 app.route('/api/v1/admin/staff', staffAdminRouter);
+app.route('/api/v1/catalog', catalogRouter);
 
 app.notFound((c) => c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404));
 
