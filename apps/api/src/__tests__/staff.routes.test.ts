@@ -19,9 +19,8 @@ const createdUserIds: string[] = [];
 beforeAll(async () => {
   const [school] = await db.insert(schools).values({
     name: 'Routes Test School',
-    address: '3 Routes Ave',
   }).returning({ id: schools.id });
-  schoolId = school.id;
+  schoolId = school!.id;
 
   const [admin] = await db.insert(users).values({
     email: `admin-routes-${Date.now()}@school.com`,
@@ -34,7 +33,7 @@ beforeAll(async () => {
     approvalStatus: 'approved',
   }).returning({ id: users.id });
 
-  adminId = admin.id;
+  adminId = admin!.id;
   createdUserIds.push(adminId);
   adminToken = signAccessToken({ sub: adminId, role: 'admin', schoolId });
 });
@@ -60,7 +59,7 @@ describe('POST /api/v1/auth/register', () => {
       }),
     });
     expect(res.status).toBe(201);
-    const body = await res.json();
+    const body = await res.json() as Record<string, unknown>;
     expect(body.success).toBe(true);
     const [u] = await db.select({ id: users.id }).from(users).where(eq(users.fullName, 'Self Register')).limit(1);
     if (u) createdUserIds.push(u.id);
@@ -126,9 +125,9 @@ describe('GET /api/v1/admin/staff/pending', () => {
       emailVerified: true,
       approvalStatus: 'approved',
     }).returning({ id: users.id });
-    createdUserIds.push(teacher.id);
+    createdUserIds.push(teacher!.id);
 
-    const teacherToken = signAccessToken({ sub: teacher.id, role: 'teacher', schoolId });
+    const teacherToken = signAccessToken({ sub: teacher!.id, role: 'teacher', schoolId });
     const res = await app.request('/api/v1/admin/staff/pending', {
       headers: { Authorization: `Bearer ${teacherToken}` },
     });
@@ -140,7 +139,7 @@ describe('GET /api/v1/admin/staff/pending', () => {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     expect(res.status).toBe(200);
-    const body = await res.json();
+    const body = await res.json() as Record<string, unknown>;
     expect(body.success).toBe(true);
     expect(Array.isArray(body.data)).toBe(true);
   });
@@ -155,15 +154,15 @@ describe('POST /api/v1/admin/staff/:id/approve', () => {
       body: JSON.stringify({ email, password: 'password123', fullName: 'To Approve', role: 'teacher', schoolId }),
     });
     const [user] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
-    createdUserIds.push(user.id);
+    createdUserIds.push(user!.id);
 
-    const res = await app.request(`/api/v1/admin/staff/${user.id}/approve`, {
+    const res = await app.request(`/api/v1/admin/staff/${user!.id}/approve`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     expect(res.status).toBe(200);
-    const [updated] = await db.select({ approvalStatus: users.approvalStatus }).from(users).where(eq(users.id, user.id)).limit(1);
-    expect(updated.approvalStatus).toBe('approved');
+    const [updated] = await db.select({ approvalStatus: users.approvalStatus }).from(users).where(eq(users.id, user!.id)).limit(1);
+    expect(updated!.approvalStatus).toBe('approved');
   });
 });
 
@@ -176,15 +175,15 @@ describe('POST /api/v1/admin/staff/:id/reject', () => {
       body: JSON.stringify({ email, password: 'password123', fullName: 'To Reject', role: 'teacher', schoolId }),
     });
     const [user] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
-    createdUserIds.push(user.id);
+    createdUserIds.push(user!.id);
 
-    const res = await app.request(`/api/v1/admin/staff/${user.id}/reject`, {
+    const res = await app.request(`/api/v1/admin/staff/${user!.id}/reject`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     expect(res.status).toBe(200);
-    const [updated] = await db.select({ approvalStatus: users.approvalStatus }).from(users).where(eq(users.id, user.id)).limit(1);
-    expect(updated.approvalStatus).toBe('rejected');
+    const [updated] = await db.select({ approvalStatus: users.approvalStatus }).from(users).where(eq(users.id, user!.id)).limit(1);
+    expect(updated!.approvalStatus).toBe('rejected');
   });
 });
 
@@ -200,7 +199,7 @@ describe('POST /api/v1/admin/staff', () => {
       body: JSON.stringify({ email, fullName: 'Admin Created', role: 'librarian', schoolId }),
     });
     expect(res.status).toBe(201);
-    const body = await res.json();
+    const body = await res.json() as { success: boolean; data: { id: string } };
     expect(body.success).toBe(true);
     expect(body.data.id).toBeDefined();
     createdUserIds.push(body.data.id);

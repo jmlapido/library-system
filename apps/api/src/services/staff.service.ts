@@ -124,11 +124,11 @@ export async function createStaffByAdmin(
     })
     .returning({ id: users.id });
 
-  const raw = await createToken(newUser.id, 'staff_invite', 72);
+  const raw = await createToken(newUser!.id, 'staff_invite', 72);
   const inviteUrl = `${APP_URL}/auth/set-password?token=${raw}`;
   await emailService.sendStaffInviteEmail(input.email, inviteUrl, input.fullName);
 
-  return { id: newUser.id };
+  return { id: newUser!.id };
 }
 
 /**

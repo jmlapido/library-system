@@ -11,7 +11,6 @@ let testUserId: string;
 beforeAll(async () => {
   const [school] = await db.insert(schools).values({
     name: 'Token Test School',
-    address: '1 Token St',
   }).returning({ id: schools.id });
 
   const [user] = await db.insert(users).values({
@@ -19,10 +18,10 @@ beforeAll(async () => {
     passwordHash: 'hash',
     fullName: 'Token Test User',
     role: 'teacher',
-    schoolId: school.id,
+    schoolId: school!.id,
   }).returning({ id: users.id });
 
-  testUserId = user.id;
+  testUserId = user!.id;
 });
 
 afterAll(async () => {

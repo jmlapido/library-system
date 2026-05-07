@@ -102,7 +102,7 @@ export async function listPending(c: Context) {
  * Approve a pending staff account and send a verification email.
  */
 export async function approve(c: Context) {
-  const userId = c.req.param('id');
+  const userId = c.req.param('id') ?? '';
   try {
     await staffService.approveStaff(userId);
     return c.json({ success: true, message: 'Staff approved. Verification email sent.' });
@@ -116,7 +116,7 @@ export async function approve(c: Context) {
  * Reject a pending staff account and notify the applicant.
  */
 export async function reject(c: Context) {
-  const userId = c.req.param('id');
+  const userId = c.req.param('id') ?? '';
   try {
     await staffService.rejectStaff(userId);
     return c.json({ success: true, message: 'Staff account rejected.' });
