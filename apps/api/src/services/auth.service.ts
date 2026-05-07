@@ -18,7 +18,8 @@ export class AppError extends Error {
  * Email identifiers use password; all others use student ID + PIN.
  * @param input - Validated login payload (identifier + credential).
  * @returns Access token, raw refresh token, and public user fields.
- * @throws AppError with code INVALID_CREDENTIALS, ACCOUNT_INACTIVE, APPROVAL_PENDING, or EMAIL_NOT_VERIFIED.
+ * @throws AppError with code INVALID_CREDENTIALS, ACCOUNT_INACTIVE (covers isActive=false and
+ *   approvalStatus='rejected'), APPROVAL_PENDING, or EMAIL_NOT_VERIFIED.
  */
 export async function login(input: LoginInput) {
   const isEmail = input.identifier.includes('@');
@@ -31,6 +32,7 @@ export async function login(input: LoginInput) {
 
   if (!user) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
   if (user.approvalStatus === 'pending') throw new AppError('APPROVAL_PENDING', 'Account awaiting admin approval');
+  if (user.approvalStatus === 'rejected') throw new AppError('ACCOUNT_INACTIVE', 'Account has been rejected');
   if (!user.isActive) throw new AppError('ACCOUNT_INACTIVE', 'Account is inactive');
 
   const hashToCheck = isEmail ? user.passwordHash : user.pinHash;
