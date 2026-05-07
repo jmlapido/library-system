@@ -65,7 +65,7 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
 | 20 | Catalog dependencies | Install: Redis client (`ioredis`), Meilisearch client (`meilisearch`), ISBN lookup (`axios` + Google Books / Open Library APIs) | ✅ |
-| 21 | `catalog.service.ts` + routes | Book CRUD, ISBN auto-fill, Meilisearch indexing/search, copy management (book_inventory), barcode assignment | 🔄 |
+| 21 | `catalog.service.ts` + routes | Book CRUD, ISBN auto-fill, Meilisearch indexing/search, copy management (book_inventory), barcode assignment | ✅ |
 
 ---
 
@@ -162,8 +162,8 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | Metric | Count |
 |--------|-------|
-| Tasks completed (Group A–C + Task 20) | **20** |
-| Tasks remaining Phase 1 (Group D–I) | **19** |
+| Tasks completed (Group A–C + Tasks 20–21) | **21** |
+| Tasks remaining Phase 1 (Group D–I) | **18** |
 | Test files | 9 |
 | Tests passing | 53 |
 | API endpoints live | 10 |
