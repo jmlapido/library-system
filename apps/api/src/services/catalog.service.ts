@@ -80,7 +80,7 @@ function buildDocument(book: Book, availableCopies: number, totalCopies: number)
   };
 }
 
-async function refreshBookIndex(bookId: string): Promise<void> {
+export async function refreshBookIndex(bookId: string): Promise<void> {
   const [book] = await db.select().from(books).where(eq(books.id, bookId));
   if (!book || book.isDeleted) {
     await meili.index(BOOKS_INDEX).deleteDocument(bookId).catch(() => undefined);
