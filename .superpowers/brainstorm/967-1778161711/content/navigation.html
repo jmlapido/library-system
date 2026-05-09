@@ -1,0 +1,77 @@
+<h2>Student Portal — Navigation Structure</h2>
+<p class="subtitle">This drives the layout of every screen. Which navigation pattern fits a school library app best?</p>
+
+<div class="cards">
+  <div class="card" data-choice="bottom-nav" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;color:#94a3b8;min-height:180px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div style="background:#1e293b;border-radius:6px;padding:10px;flex:1;margin-bottom:8px;">
+          <div style="color:#f8fafc;font-weight:600;margin-bottom:6px;">📚 Catalog</div>
+          <div style="background:#334155;height:8px;border-radius:4px;margin-bottom:4px;width:80%;"></div>
+          <div style="background:#334155;height:8px;border-radius:4px;margin-bottom:4px;width:60%;"></div>
+          <div style="background:#334155;height:8px;border-radius:4px;width:70%;"></div>
+        </div>
+        <div style="background:#1e293b;border-radius:6px;padding:8px;display:flex;justify-content:space-around;align-items:center;">
+          <div style="text-align:center;"><div style="font-size:16px;">🔍</div><div style="font-size:9px;color:#60a5fa;">Search</div></div>
+          <div style="text-align:center;"><div style="font-size:16px;">📖</div><div style="font-size:9px;">My Books</div></div>
+          <div style="text-align:center;"><div style="font-size:16px;">📷</div><div style="font-size:9px;">Scan</div></div>
+          <div style="text-align:center;"><div style="font-size:16px;">👤</div><div style="font-size:9px;">Account</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Bottom Tab Bar</h3>
+      <p>Mobile-first. Persistent tabs at the bottom: Search, My Books, Scan, Account. Thumb-friendly, standard for student apps.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="top-nav" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;color:#94a3b8;min-height:180px;display:flex;flex-direction:column;">
+        <div style="background:#1e293b;border-radius:6px;padding:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="color:#60a5fa;font-weight:700;font-size:13px;">LibraMS</div>
+          <div style="display:flex;gap:12px;font-size:10px;color:#94a3b8;">
+            <span style="color:#60a5fa;border-bottom:2px solid #60a5fa;padding-bottom:2px;">Search</span>
+            <span>My Books</span>
+            <span>Scan</span>
+            <span>👤</span>
+          </div>
+        </div>
+        <div style="background:#1e293b;border-radius:6px;padding:10px;flex:1;">
+          <div style="background:#334155;height:8px;border-radius:4px;margin-bottom:4px;width:80%;"></div>
+          <div style="background:#334155;height:8px;border-radius:4px;margin-bottom:4px;width:60%;"></div>
+          <div style="background:#334155;height:8px;border-radius:4px;width:70%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Top Navigation Bar</h3>
+      <p>Classic web nav. Logo + links across the top. Familiar on desktop, less ergonomic on phones but works well on kiosk screens.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="sidebar" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;color:#94a3b8;min-height:180px;display:flex;flex-direction:column;">
+        <div style="display:flex;gap:8px;flex:1;">
+          <div style="background:#1e293b;border-radius:6px;padding:8px;width:60px;display:flex;flex-direction:column;gap:8px;">
+            <div style="color:#60a5fa;font-size:9px;font-weight:700;">📚</div>
+            <div style="font-size:9px;">🔍</div>
+            <div style="font-size:9px;">📖</div>
+            <div style="font-size:9px;">📷</div>
+            <div style="font-size:9px;">👤</div>
+          </div>
+          <div style="background:#1e293b;border-radius:6px;padding:10px;flex:1;">
+            <div style="background:#334155;height:8px;border-radius:4px;margin-bottom:4px;width:80%;"></div>
+            <div style="background:#334155;height:8px;border-radius:4px;margin-bottom:4px;width:60%;"></div>
+            <div style="background:#334155;height:8px;border-radius:4px;width:70%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Collapsed Sidebar</h3>
+      <p>Icon-only sidebar on mobile, expands on tablet/desktop. Scales well across screen sizes, common in dashboard apps.</p>
+    </div>
+  </div>
+</div>

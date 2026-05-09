@@ -7,8 +7,6 @@ interface StatusBadgeProps {
 const STATUS_COLORS: Record<string, string> = {
   available: '#22c55e',
   checkedOut: '#f59e0b',
-  overdue: '#ef4444',
-  holdReady: '#3b82f6',
 };
 
 /**

@@ -1,0 +1,118 @@
+<h2>Catalog Search — Layout</h2>
+<p class="subtitle">How should search results and filters be presented?</p>
+
+<div class="cards">
+  <div class="card" data-choice="grid-chips" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:200px;font-family:sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:8px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:11px;">🔍</span>
+          <span style="color:rgba(255,255,255,0.6);font-size:9px;">Search books...</span>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;overflow:hidden;">
+          <div style="background:white;border-radius:20px;padding:3px 8px;font-size:8px;color:#4f46e5;font-weight:600;white-space:nowrap;">Fiction ✕</div>
+          <div style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 8px;font-size:8px;color:white;white-space:nowrap;">Available</div>
+          <div style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 8px;font-size:8px;color:white;white-space:nowrap;">+ Filters</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:7px;">
+            <div style="background:rgba(255,255,255,0.1);border-radius:4px;height:50px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:18px;">📗</div>
+            <div style="color:white;font-size:8px;font-weight:600;">Noli Me Tangere</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:7px;">Jose Rizal</div>
+            <div style="background:#22c55e;border-radius:4px;padding:1px 5px;font-size:7px;color:white;margin-top:3px;display:inline-block;">Available</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:7px;">
+            <div style="background:rgba(255,255,255,0.1);border-radius:4px;height:50px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:18px;">📘</div>
+            <div style="color:white;font-size:8px;font-weight:600;">El Filibusterismo</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:7px;">Jose Rizal</div>
+            <div style="background:#f59e0b;border-radius:4px;padding:1px 5px;font-size:7px;color:white;margin-top:3px;display:inline-block;">2 copies</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Grid + Filter Chips</h3>
+      <p>2-column book grid with cover art. Active filters shown as dismissible chips above results. "+ Filters" opens a bottom sheet with all facets.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="list-sidebar" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:200px;font-family:sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:8px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:11px;">🔍</span>
+          <span style="color:rgba(255,255,255,0.6);font-size:9px;">Search books...</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div style="width:55px;flex-shrink:0;">
+            <div style="color:rgba(255,255,255,0.5);font-size:7px;font-weight:600;margin-bottom:4px;">GENRE</div>
+            <div style="background:white;border-radius:4px;padding:2px 5px;font-size:7px;color:#4f46e5;margin-bottom:2px;">Fiction</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:4px;padding:2px 5px;font-size:7px;color:white;margin-bottom:2px;">Science</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:4px;padding:2px 5px;font-size:7px;color:white;margin-bottom:6px;">History</div>
+            <div style="color:rgba(255,255,255,0.5);font-size:7px;font-weight:600;margin-bottom:4px;">STATUS</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:4px;padding:2px 5px;font-size:7px;color:white;margin-bottom:2px;">Available</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:6px;display:flex;gap:6px;align-items:center;">
+              <div style="font-size:16px;">📗</div>
+              <div>
+                <div style="color:white;font-size:8px;font-weight:600;">Noli Me Tangere</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:7px;">Jose Rizal • 1887</div>
+                <div style="background:#22c55e;border-radius:4px;padding:1px 4px;font-size:6px;color:white;display:inline-block;">Available</div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:6px;display:flex;gap:6px;align-items:center;">
+              <div style="font-size:16px;">📘</div>
+              <div>
+                <div style="color:white;font-size:8px;font-weight:600;">El Filibusterismo</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:7px;">Jose Rizal • 1891</div>
+                <div style="background:#f59e0b;border-radius:4px;padding:1px 4px;font-size:6px;color:white;display:inline-block;">Checked out</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — List + Left Filter Panel</h3>
+      <p>Compact list view with inline cover + metadata. Persistent filter panel on the left. Shows more results per screen, better for longer titles.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="grid-bottomsheet" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:200px;font-family:sans-serif;position:relative;overflow:hidden;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;">🔍</span><span style="color:rgba(255,255,255,0.6);font-size:9px;">noli me...</span></div>
+          <span style="background:white;border-radius:20px;padding:2px 7px;font-size:8px;color:#4f46e5;font-weight:600;">⚙ Filter</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:6px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:5px;text-align:center;">
+            <div style="font-size:14px;margin-bottom:2px;">📗</div>
+            <div style="color:white;font-size:6px;font-weight:600;">Noli Me...</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:5px;text-align:center;">
+            <div style="font-size:14px;margin-bottom:2px;">📘</div>
+            <div style="color:white;font-size:6px;font-weight:600;">El Fili...</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:5px;text-align:center;">
+            <div style="font-size:14px;margin-bottom:2px;">📙</div>
+            <div style="color:white;font-size:6px;font-weight:600;">Florante...</div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:white;border-radius:8px 8px 0 0;padding:8px;box-shadow:0 -4px 20px rgba(0,0,0,0.3);">
+          <div style="color:#4f46e5;font-size:9px;font-weight:700;margin-bottom:4px;">Filter Results</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <div style="border:1px solid #e2e8f0;border-radius:20px;padding:2px 6px;font-size:7px;color:#4f46e5;">Genre</div>
+            <div style="border:1px solid #e2e8f0;border-radius:20px;padding:2px 6px;font-size:7px;color:#64748b;">Level</div>
+            <div style="border:1px solid #e2e8f0;border-radius:20px;padding:2px 6px;font-size:7px;color:#64748b;">Language</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — 3-Column Grid + Filter Button</h3>
+      <p>Denser 3-column grid maximizes results. Single "Filter" button opens a bottom sheet with all options. Clean, Instagram-like feel.</p>
+    </div>
+  </div>
+</div>

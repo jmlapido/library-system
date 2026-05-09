@@ -5,6 +5,7 @@
 export function SkeletonCard() {
   return (
     <div
+      aria-hidden="true"
       style={{
         background: 'rgba(255,255,255,0.1)',
         borderRadius: 10,
