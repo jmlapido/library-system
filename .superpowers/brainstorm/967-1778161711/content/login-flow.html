@@ -1,0 +1,57 @@
+<h2>Login Page — Auto-Detection Flow</h2>
+<p class="subtitle">Students can log in with email+password OR student ID+PIN. How should the form handle the switch?</p>
+
+<div class="cards">
+  <div class="card" data-choice="single-smart" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:14px;min-height:200px;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="color:white;font-size:20px;margin-bottom:4px;">📚</div>
+        <div style="color:white;font-weight:700;font-size:13px;margin-bottom:2px;">LibraMS</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:9px;margin-bottom:12px;">Welcome back</div>
+        <div style="width:100%;background:rgba(255,255,255,0.2);border-radius:8px;padding:8px;margin-bottom:6px;">
+          <div style="color:rgba(255,255,255,0.6);font-size:8px;margin-bottom:2px;">Email or Student ID</div>
+          <div style="color:white;font-size:10px;">2024-00123<span style="animation:blink 1s infinite;">|</span></div>
+        </div>
+        <div style="width:100%;background:rgba(255,255,255,0.2);border-radius:8px;padding:8px;margin-bottom:10px;">
+          <div style="color:rgba(255,255,255,0.6);font-size:8px;margin-bottom:2px;">PIN <span style="color:rgba(255,255,255,0.4);font-size:7px;">(auto-detected: Student ID)</span></div>
+          <div style="color:white;font-size:10px;">••••</div>
+        </div>
+        <div style="width:100%;background:white;border-radius:8px;padding:8px;text-align:center;">
+          <span style="color:#4f46e5;font-size:10px;font-weight:700;">Sign In</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Single Smart Field</h3>
+      <p>One input: "Email or Student ID". As user types, the second field label switches between "Password" and "PIN" automatically. Zero friction.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="two-tab" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:14px;min-height:200px;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="color:white;font-size:20px;margin-bottom:4px;">📚</div>
+        <div style="color:white;font-weight:700;font-size:13px;margin-bottom:12px;">LibraMS</div>
+        <div style="width:100%;display:flex;background:rgba(255,255,255,0.15);border-radius:8px;margin-bottom:10px;">
+          <div style="flex:1;text-align:center;padding:6px;background:white;border-radius:6px;color:#4f46e5;font-size:9px;font-weight:700;">Student ID</div>
+          <div style="flex:1;text-align:center;padding:6px;color:rgba(255,255,255,0.7);font-size:9px;">Email</div>
+        </div>
+        <div style="width:100%;background:rgba(255,255,255,0.2);border-radius:8px;padding:8px;margin-bottom:6px;">
+          <div style="color:rgba(255,255,255,0.6);font-size:8px;margin-bottom:2px;">Student ID</div>
+          <div style="color:white;font-size:10px;">2024-00123</div>
+        </div>
+        <div style="width:100%;background:rgba(255,255,255,0.2);border-radius:8px;padding:8px;margin-bottom:10px;">
+          <div style="color:rgba(255,255,255,0.6);font-size:8px;margin-bottom:2px;">PIN</div>
+          <div style="color:white;font-size:10px;">••••</div>
+        </div>
+        <div style="width:100%;background:white;border-radius:8px;padding:8px;text-align:center;">
+          <span style="color:#4f46e5;font-size:10px;font-weight:700;">Sign In</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Tab Toggle</h3>
+      <p>Two explicit tabs: "Student ID" and "Email". User picks their method, form fields change. Clear and obvious — no magic detection needed.</p>
+    </div>
+  </div>
+</div>

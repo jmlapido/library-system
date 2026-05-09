@@ -1,0 +1,180 @@
+<h2>Catalog Search — More Variations</h2>
+<p class="subtitle">Four closer looks between grid-with-chips and list-with-sidebar styles</p>
+
+<div class="cards">
+  <div class="card" data-choice="a1" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:210px;font-family:sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:6px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:11px;">🔍</span><span style="color:rgba(255,255,255,0.5);font-size:9px;">Search books, authors...</span>
+        </div>
+        <!-- scrollable chip row -->
+        <div style="display:flex;gap:4px;margin-bottom:7px;overflow:hidden;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:3px 8px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">All</div>
+          <div style="background:white;border-radius:20px;padding:3px 8px;font-size:7px;color:#4f46e5;font-weight:700;white-space:nowrap;">Fiction</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:3px 8px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">Science</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:3px 8px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">History</div>
+        </div>
+        <!-- 2-col grid, taller cards with spine-style cover -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:10px;overflow:hidden;">
+            <div style="background:linear-gradient(160deg,#22c55e,#16a34a);height:60px;display:flex;align-items:center;justify-content:center;font-size:22px;">📗</div>
+            <div style="padding:6px;">
+              <div style="color:white;font-size:8px;font-weight:700;line-height:1.2;margin-bottom:2px;">Noli Me Tangere</div>
+              <div style="color:rgba(255,255,255,0.55);font-size:7px;margin-bottom:4px;">Jose Rizal</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="background:#22c55e;border-radius:4px;padding:1px 5px;font-size:6px;color:white;">✓ Available</div>
+                <div style="color:rgba(255,255,255,0.4);font-size:6px;">Gr 9–12</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:10px;overflow:hidden;">
+            <div style="background:linear-gradient(160deg,#3b82f6,#2563eb);height:60px;display:flex;align-items:center;justify-content:center;font-size:22px;">📘</div>
+            <div style="padding:6px;">
+              <div style="color:white;font-size:8px;font-weight:700;line-height:1.2;margin-bottom:2px;">El Filibusterismo</div>
+              <div style="color:rgba(255,255,255,0.55);font-size:7px;margin-bottom:4px;">Jose Rizal</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="background:#f59e0b;border-radius:4px;padding:1px 5px;font-size:6px;color:white;">Hold</div>
+                <div style="color:rgba(255,255,255,0.4);font-size:6px;">Gr 9–12</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A1 — Grid + Genre Scroll Chips</h3>
+      <p>2-col grid with colored cover areas. Genre chips scroll horizontally (no "+ Filters" needed for main genres). Taller cards show grade level.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="a2" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:210px;font-family:sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;">🔍</span><span style="color:rgba(255,255,255,0.5);font-size:9px;">Search...</span></div>
+          <span style="background:rgba(255,255,255,0.2);border-radius:6px;padding:3px 7px;font-size:8px;color:white;">⚙ 2</span>
+        </div>
+        <!-- active filter pills -->
+        <div style="display:flex;gap:3px;margin-bottom:7px;">
+          <div style="background:white;border-radius:20px;padding:2px 8px;font-size:7px;color:#4f46e5;font-weight:600;">Fiction ✕</div>
+          <div style="background:white;border-radius:20px;padding:2px 8px;font-size:7px;color:#4f46e5;font-weight:600;">Available ✕</div>
+        </div>
+        <!-- list-style but with big left cover thumbnail -->
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:7px;display:flex;gap:8px;align-items:center;">
+            <div style="background:linear-gradient(160deg,#22c55e,#16a34a);border-radius:6px;width:32px;height:42px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📗</div>
+            <div style="flex:1;min-width:0;">
+              <div style="color:white;font-size:8px;font-weight:700;margin-bottom:1px;">Noli Me Tangere</div>
+              <div style="color:rgba(255,255,255,0.55);font-size:7px;margin-bottom:3px;">Jose Rizal · Fiction · Gr 9–12</div>
+              <div style="display:flex;gap:4px;align-items:center;">
+                <div style="background:#22c55e;border-radius:4px;padding:1px 5px;font-size:6px;color:white;">✓ 3 copies</div>
+                <div style="color:rgba(255,255,255,0.35);font-size:6px;">ISBN 978-971</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:7px;display:flex;gap:8px;align-items:center;">
+            <div style="background:linear-gradient(160deg,#f59e0b,#d97706);border-radius:6px;width:32px;height:42px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📙</div>
+            <div style="flex:1;min-width:0;">
+              <div style="color:white;font-size:8px;font-weight:700;margin-bottom:1px;">Florante at Laura</div>
+              <div style="color:rgba(255,255,255,0.55);font-size:7px;margin-bottom:3px;">Francisco Balagtas · Poetry · Gr 8</div>
+              <div style="display:flex;gap:4px;align-items:center;">
+                <div style="background:#f59e0b;border-radius:4px;padding:1px 5px;font-size:6px;color:white;">Checked out</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A2 — List + Active Filter Pills</h3>
+      <p>List view with tall book thumbnail on the left (feels like a real book). Active filters shown as dismissible pills. Filter count badge on the button.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b1" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:210px;font-family:sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:6px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:11px;">🔍</span><span style="color:rgba(255,255,255,0.5);font-size:9px;">Search books...</span>
+        </div>
+        <div style="display:flex;gap:7px;">
+          <!-- narrow icon sidebar -->
+          <div style="width:42px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;">
+            <div style="color:rgba(255,255,255,0.4);font-size:6px;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Genre</div>
+            <div style="background:white;border-radius:6px;padding:3px 4px;font-size:7px;color:#4f46e5;font-weight:600;text-align:center;">📖 All</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 4px;font-size:7px;color:rgba(255,255,255,0.7);text-align:center;">⚗️ Sci</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 4px;font-size:7px;color:rgba(255,255,255,0.7);text-align:center;">🏛 Hist</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 4px;font-size:7px;color:rgba(255,255,255,0.7);text-align:center;">✍️ Lit</div>
+            <div style="color:rgba(255,255,255,0.4);font-size:6px;font-weight:700;text-transform:uppercase;margin:4px 0 2px;">Level</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 4px;font-size:7px;color:rgba(255,255,255,0.7);text-align:center;">Gr 7</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 4px;font-size:7px;color:rgba(255,255,255,0.7);text-align:center;">Gr 8</div>
+          </div>
+          <!-- 2-col result grid -->
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+            <div style="background:rgba(255,255,255,0.15);border-radius:8px;overflow:hidden;">
+              <div style="background:linear-gradient(160deg,#22c55e,#16a34a);height:46px;display:flex;align-items:center;justify-content:center;font-size:18px;">📗</div>
+              <div style="padding:5px;">
+                <div style="color:white;font-size:7px;font-weight:700;margin-bottom:1px;">Noli Me Tangere</div>
+                <div style="background:#22c55e;border-radius:3px;padding:1px 4px;font-size:6px;color:white;display:inline-block;">Available</div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:8px;overflow:hidden;">
+              <div style="background:linear-gradient(160deg,#3b82f6,#2563eb);height:46px;display:flex;align-items:center;justify-content:center;font-size:18px;">📘</div>
+              <div style="padding:5px;">
+                <div style="color:white;font-size:7px;font-weight:700;margin-bottom:1px;">El Filibusterismo</div>
+                <div style="background:#f59e0b;border-radius:3px;padding:1px 4px;font-size:6px;color:white;display:inline-block;">Hold</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B1 — Icon Sidebar + Grid</h3>
+      <p>Narrow icon+label sidebar for quick genre/level taps, with 2-col grid on the right. Compact — sidebar takes only ~40px. Best of both worlds.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b2" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;padding:10px;min-height:210px;font-family:sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:7px;margin-bottom:6px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:11px;">🔍</span><span style="color:rgba(255,255,255,0.5);font-size:9px;">Search books...</span>
+        </div>
+        <!-- two-row filter: genre on top, status below -->
+        <div style="display:flex;gap:3px;margin-bottom:3px;overflow:hidden;">
+          <div style="background:white;border-radius:20px;padding:2px 7px;font-size:7px;color:#4f46e5;font-weight:700;white-space:nowrap;">All Genres</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:2px 7px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">Fiction</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:2px 7px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">Science</div>
+        </div>
+        <div style="display:flex;gap:3px;margin-bottom:7px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:2px 7px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">All Status</div>
+          <div style="background:white;border-radius:20px;padding:2px 7px;font-size:7px;color:#4f46e5;font-weight:700;white-space:nowrap;">✓ Available</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:2px 7px;font-size:7px;color:rgba(255,255,255,0.7);white-space:nowrap;">On Hold</div>
+        </div>
+        <!-- list rows -->
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px;display:flex;gap:6px;align-items:center;">
+            <div style="font-size:16px;">📗</div>
+            <div>
+              <div style="color:white;font-size:8px;font-weight:700;">Noli Me Tangere</div>
+              <div style="color:rgba(255,255,255,0.5);font-size:7px;">Jose Rizal · 3 copies available</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px;display:flex;gap:6px;align-items:center;">
+            <div style="font-size:16px;">📙</div>
+            <div>
+              <div style="color:white;font-size:8px;font-weight:700;">Florante at Laura</div>
+              <div style="color:rgba(255,255,255,0.5);font-size:7px;">Francisco Balagtas · 1 copy available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B2 — Two-Row Chips + List</h3>
+      <p>Genre chips on row 1, status chips on row 2 — no filter panel needed at all. Results in a compact list. Very scannable, zero taps to filter.</p>
+    </div>
+  </div>
+</div>

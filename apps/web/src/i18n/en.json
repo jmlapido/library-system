@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "search": "Search",
+    "myBooks": "My Books",
+    "scan": "Scan",
+    "account": "Account"
+  },
+  "login": {
+    "title": "LibraMS",
+    "subtitle": "Welcome back",
+    "identifier": "Email or Student ID",
+    "password": "Password",
+    "pin": "PIN",
+    "detectedEmail": "Email detected",
+    "detectedStudentId": "Student ID detected",
+    "submit": "Sign In",
+    "error": "Invalid credentials. Please try again."
+  },
+  "search": {
+    "placeholder": "Search books, authors, ISBN...",
+    "allGenres": "All",
+    "noResults": "No books found. Try different keywords.",
+    "available": "Available",
+    "checkedOut": "Checked out",
+    "onHold": "On hold"
+  },
+  "book": {
+    "about": "About",
+    "copies": "Copies",
+    "related": "Related",
+    "checkout": "Checkout",
+    "placeHold": "Place Hold",
+    "cancelHold": "Cancel Hold",
+    "copiesAvailable": "{{available}} of {{total}} copies available",
+    "confirmCheckout": "Confirm Checkout",
+    "dueDate": "Due date: {{date}}",
+    "holdPlaced": "Hold placed — you are #{{position}} in line",
+    "noDescription": "No description available."
+  },
+  "myBooks": {
+    "checkedOut": "Checked Out",
+    "holds": "Holds",
+    "renew": "Renew",
+    "cancelHold": "Cancel Hold",
+    "noCheckouts": "No books checked out — explore the catalog!",
+    "noHolds": "No holds placed.",
+    "dueIn": "Due in {{days}} days",
+    "dueToday": "Due today",
+    "overdue": "Overdue by {{days}} days",
+    "holdReady": "Ready — pick up by {{date}}",
+    "queuePosition": "You are #{{position}} in line"
+  },
+  "account": {
+    "language": "Language",
+    "signOut": "Sign Out",
+    "booksThisYear": "Books this year",
+    "gradeLevel": "Grade Level"
+  },
+  "scan": {
+    "instruction": "Point at barcode",
+    "enterManually": "Enter manually",
+    "notFound": "Barcode not recognized",
+    "permissionDenied": "Camera access denied. Use manual entry.",
+    "manualPlaceholder": "Enter ISBN or barcode..."
+  }
+}
