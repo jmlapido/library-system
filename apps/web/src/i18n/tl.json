@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "search": "Hanapin",
+    "myBooks": "Aking Libro",
+    "scan": "I-scan",
+    "account": "Account"
+  },
+  "login": {
+    "title": "LibraMS",
+    "subtitle": "Maligayang pagbabalik",
+    "identifier": "Email o Student ID",
+    "password": "Password",
+    "pin": "PIN",
+    "detectedEmail": "Email ang natukoy",
+    "detectedStudentId": "Student ID ang natukoy",
+    "submit": "Mag-sign In",
+    "error": "Mali ang credentials. Subukan ulit."
+  },
+  "search": {
+    "placeholder": "Maghanap ng libro, may-akda, ISBN...",
+    "allGenres": "Lahat",
+    "noResults": "Walang nahanap na libro. Subukan ng iba.",
+    "available": "Available",
+    "checkedOut": "Hiniram na",
+    "onHold": "Naghihintay"
+  },
+  "book": {
+    "about": "Tungkol",
+    "copies": "Kopya",
+    "related": "Kaugnay",
+    "checkout": "Hiramin",
+    "placeHold": "Mag-hold",
+    "cancelHold": "Kanselahin ang Hold",
+    "copiesAvailable": "{{available}} sa {{total}} kopya ang available",
+    "confirmCheckout": "Kumpirmahin ang Pahiram",
+    "dueDate": "Petsa ng pagbabalik: {{date}}",
+    "holdPlaced": "Naka-hold na — ikaw ay #{{position}} sa pila",
+    "noDescription": "Walang paglalarawan."
+  },
+  "myBooks": {
+    "checkedOut": "Hiniram",
+    "holds": "Mga Hold",
+    "renew": "I-renew",
+    "cancelHold": "Kanselahin",
+    "noCheckouts": "Walang hiniram na libro — mag-browse ng catalog!",
+    "noHolds": "Walang mga hold.",
+    "dueIn": "Due sa loob ng {{days}} araw",
+    "dueToday": "Due ngayon",
+    "overdue": "Overdue ng {{days}} araw",
+    "holdReady": "Handa na — kunin bago {{date}}",
+    "queuePosition": "Ikaw ay #{{position}} sa pila"
+  },
+  "account": {
+    "language": "Wika",
+    "signOut": "Mag-sign Out",
+    "booksThisYear": "Libro ngayong taon",
+    "gradeLevel": "Antas"
+  },
+  "scan": {
+    "instruction": "Ituro sa barcode",
+    "enterManually": "Ilagay nang manu-mano",
+    "notFound": "Hindi nakilala ang barcode",
+    "permissionDenied": "Tinanggihan ang camera. Gamitin ang manual na pagpasok.",
+    "manualPlaceholder": "Ilagay ang ISBN o barcode..."
+  }
+}
