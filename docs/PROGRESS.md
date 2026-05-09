@@ -1,7 +1,7 @@
 # LibraMS — Development Progress Tracker
 
-> Last updated: 2026-05-07
-> Branch: `master` | Tests: 53 passing | Typecheck: clean
+> Last updated: 2026-05-09
+> Branch: `master` | Tests: 73 passing | Typecheck: clean
 
 ---
 
@@ -82,12 +82,12 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 24 | Auth pages | Login page (auto-detect: email vs student ID+PIN), logout, session persistence via Zustand | ⬜ |
-| 25 | Catalog search UI | Search bar with Meilisearch, faceted filters (genre, level, availability, language), book cards with cover images | ⬜ |
-| 26 | Book detail page | Full book info, availability status, hold button, related books | ⬜ |
-| 27 | My account page | Active checkouts, due dates, hold queue position, renewal button, reading history | ⬜ |
-| 28 | Barcode scanner | Camera-based scanning via Quagga2/ZXing for student self-checkout | ⬜ |
-| 29 | PWA setup | Service Worker, offline cache, installable manifest, IndexedDB local catalog snapshot | ⬜ |
+| 24 | Auth pages | Login page (auto-detect: email vs student ID+PIN), logout, session persistence via Zustand | ✅ |
+| 25 | Catalog search UI | Search bar with Meilisearch, faceted filters (genre, level, availability, language), book cards with cover images | ✅ |
+| 26 | Book detail page | Full book info, availability status, hold button, related books | ✅ |
+| 27 | My account page | Active checkouts, due dates, hold queue position, renewal button, reading history | ✅ |
+| 28 | Barcode scanner | Camera-based scanning via Quagga2/ZXing for student self-checkout | ✅ |
+| 29 | PWA setup | Service Worker, offline cache, installable manifest, IndexedDB local catalog snapshot | ✅ |
 
 ---
 
@@ -162,10 +162,10 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | Metric | Count |
 |--------|-------|
-| Tasks completed (Groups A–E) | **23** |
-| Tasks remaining Phase 1 (Groups F–I) | **16** |
-| Test files | 9 |
-| Tests passing | 53 |
+| Tasks completed (Groups A–F) | **29** |
+| Tasks remaining Phase 1 (Groups G–I) | **10** |
+| Test files | 16 |
+| Tests passing | 73 |
 | API endpoints live | 10 |
 | DB tables | 9 |
 
