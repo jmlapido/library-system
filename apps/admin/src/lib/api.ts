@@ -63,6 +63,15 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
     return request<T>(path, { ...init, headers }, false);
   }
 
+  // 204 No Content or empty body — return empty object
+  const contentType = res.headers.get('content-type');
+  const hasBody = res.status !== 204 && contentType?.includes('application/json');
+
+  if (!hasBody) {
+    if (!res.ok) throw new ApiError(res.status, 'REQUEST_FAILED', 'Request failed');
+    return undefined as T;
+  }
+
   const json = (await res.json()) as {
     success: boolean;
     data?: T;

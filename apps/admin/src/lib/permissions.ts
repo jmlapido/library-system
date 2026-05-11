@@ -19,7 +19,7 @@ export type Permission = (typeof ALL_GRANTABLE_PERMISSIONS)[number];
  * Minimum permissions each role always has.
  * These cannot be revoked — only additional permissions may be granted on top.
  */
-export const ROLE_FLOORS: Record<string, readonly string[]> = {
+export const ROLE_FLOORS: Record<'library_assistant' | 'librarian' | 'admin', readonly Permission[]> = {
   library_assistant: [],
   librarian: ALL_GRANTABLE_PERMISSIONS,
   admin: ALL_GRANTABLE_PERMISSIONS,
