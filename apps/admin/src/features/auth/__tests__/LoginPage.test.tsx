@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LoginPage } from '../LoginPage';
 import { useAuthStore } from '../../../stores/auth';
 
@@ -12,26 +11,19 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-vi.mock('../../../lib/api', () => ({
-  api: { post: vi.fn() },
-  ApiError: class ApiError extends Error {
-    constructor(public status: number, public code: string, message: string) {
-      super(message);
-    }
-  },
-}));
+vi.mock('../../../lib/api', async () => {
+  const actual = await vi.importActual<typeof import('../../../lib/api')>('../../../lib/api');
+  return { ...actual, api: { post: vi.fn() } };
+});
 
-import { api, ApiError } from '../../../lib/api';
-
-const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+import { api } from '../../../lib/api';
+import { ApiError } from '../../../lib/api';
 
 function setup() {
   return render(
-    <QueryClientProvider client={qc}>
-      <MemoryRouter>
-        <LoginPage />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <MemoryRouter>
+      <LoginPage />
+    </MemoryRouter>
   );
 }
 
@@ -41,36 +33,35 @@ beforeEach(() => {
 });
 
 describe('LoginPage', () => {
-  it('shows APPROVAL_PENDING error message', async () => {
-    vi.mocked(api.post).mockRejectedValue(new ApiError(403, 'APPROVAL_PENDING', ''));
+  it.each([
+    ['APPROVAL_PENDING', /awaiting admin approval/i],
+    ['ACCOUNT_INACTIVE', /has been deactivated/i],
+    ['EMAIL_NOT_VERIFIED', /verify your account/i],
+    ['INVALID_CREDENTIALS', /invalid email or password/i],
+  ] as const)('shows %s error message', async (code, pattern) => {
+    vi.mocked(api.post).mockRejectedValue(new ApiError(403, code, ''));
     setup();
     await userEvent.type(screen.getByLabelText(/email/i), 'jane@school.edu');
     await userEvent.type(screen.getByLabelText(/password/i), 'pass1234');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/awaiting admin approval/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(pattern)).toBeInTheDocument());
+    expect(api.post).toHaveBeenCalledWith('/auth/login', {
+      identifier: 'jane@school.edu',
+      credential: 'pass1234',
+    });
   });
 
-  it('shows ACCOUNT_INACTIVE error message', async () => {
-    vi.mocked(api.post).mockRejectedValue(new ApiError(403, 'ACCOUNT_INACTIVE', ''));
+  it('calls setSession and navigates to /staff-management on admin login', async () => {
+    const mockResult = {
+      accessToken: 'tok',
+      refreshToken: 'ref',
+      user: { id: 'u1', fullName: 'Jane', role: 'admin' as const, schoolId: 's1', effectivePermissions: [] },
+    };
+    vi.mocked(api.post).mockResolvedValue(mockResult);
     setup();
     await userEvent.type(screen.getByLabelText(/email/i), 'jane@school.edu');
     await userEvent.type(screen.getByLabelText(/password/i), 'pass1234');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/has been deactivated/i)).toBeInTheDocument()
-    );
-  });
-
-  it('shows EMAIL_NOT_VERIFIED error message', async () => {
-    vi.mocked(api.post).mockRejectedValue(new ApiError(403, 'EMAIL_NOT_VERIFIED', ''));
-    setup();
-    await userEvent.type(screen.getByLabelText(/email/i), 'jane@school.edu');
-    await userEvent.type(screen.getByLabelText(/password/i), 'pass1234');
-    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/verify your account/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/staff-management', { replace: true }));
   });
 });
