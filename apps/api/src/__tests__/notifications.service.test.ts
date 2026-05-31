@@ -27,6 +27,9 @@ import { db } from '../db/index.js';
 import { sendEmailNotification } from '../services/notifications/email.provider.js';
 import type { NotificationContext } from '../services/notifications/types.js';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MockDb = Record<string, any>;
+
 const baseCtx: NotificationContext = {
   userId: 'user-uuid-1',
   schoolId: 'school-uuid-1',
@@ -41,9 +44,12 @@ const baseCtx: NotificationContext = {
   appUrl: 'http://localhost:3000',
 };
 
+// Cast through unknown to access mocked methods not on DrizzleORM type.
+const mockDb = db as unknown as MockDb;
+
 // Convenience typed accessors (resolved after module mock is applied)
-function mockLimit() { return vi.mocked(db.limit); }
-function mockValues() { return vi.mocked(db.values); }
+function mockLimit() { return vi.mocked(mockDb.limit); }
+function mockValues() { return vi.mocked(mockDb.values); }
 function mockSendEmail() { return vi.mocked(sendEmailNotification); }
 
 describe('sendNotification', () => {
@@ -53,11 +59,11 @@ describe('sendNotification', () => {
     mockLimit().mockResolvedValue([]);
     mockValues().mockResolvedValue(undefined);
     mockSendEmail().mockResolvedValue(undefined);
-    // Restore chained mocks after clearAllMocks
-    vi.mocked(db.select).mockReturnThis();
-    vi.mocked(db.from).mockReturnThis();
-    vi.mocked(db.where).mockReturnThis();
-    vi.mocked(db.insert).mockReturnThis();
+    // Restore chained mocks after clearAllMocks (cast needed: these methods are on the mock, not DrizzleORM type)
+    vi.mocked(mockDb.select).mockReturnThis();
+    vi.mocked(mockDb.from).mockReturnThis();
+    vi.mocked(mockDb.where).mockReturnThis();
+    vi.mocked(mockDb.insert).mockReturnThis();
   });
 
   describe('happy path — email channel', () => {
@@ -182,7 +188,8 @@ describe('sendNotification', () => {
     });
 
     it('logs undefined checkoutId when not provided', async () => {
-      const ctxNoCheckout = { ...baseCtx, checkoutId: undefined };
+      const { checkoutId: _omit, ...ctxNoCheckout } = { ...baseCtx, checkoutId: 'placeholder' };
+      void _omit;
       await sendNotification('hold_expired', ctxNoCheckout);
       expect(mockValues()).toHaveBeenCalledWith(
         expect.objectContaining({ checkoutId: undefined })

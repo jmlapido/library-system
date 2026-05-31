@@ -68,7 +68,7 @@ describe('sendEmailNotification', () => {
   it('escapes HTML in book title', async () => {
     const xssCtx = { ...baseCtx, bookTitle: '<script>alert(1)</script>' };
     await sendEmailNotification('due_reminder', xssCtx);
-    const call = vi.mocked(sgMail.send).mock.calls[0][0] as { html: string };
+    const call = vi.mocked(sgMail.send).mock.calls[0]![0]! as { html: string };
     expect(call.html).not.toContain('<script>');
     expect(call.html).toContain('&lt;script&gt;');
   });
@@ -87,19 +87,22 @@ describe('sendEmailNotification', () => {
 
   it('includes fine amount in overdue_notice text when fineAmount > 0', async () => {
     await sendEmailNotification('overdue_notice', { ...baseCtx, daysOverdue: 5, fineAmount: 2.5 });
-    const call = vi.mocked(sgMail.send).mock.calls[0][0] as { text: string };
+    const call = vi.mocked(sgMail.send).mock.calls[0]![0]! as { text: string };
     expect(call.text).toContain('$2.50');
   });
 
   it('omits fine text in overdue_notice when fineAmount is 0', async () => {
     await sendEmailNotification('overdue_notice', { ...baseCtx, daysOverdue: 1, fineAmount: 0 });
-    const call = vi.mocked(sgMail.send).mock.calls[0][0] as { text: string };
+    const call = vi.mocked(sgMail.send).mock.calls[0]![0]! as { text: string };
     expect(call.text).not.toContain('Fine so far');
   });
 
   it('falls back to "soon" when dueDate is undefined in due_reminder', async () => {
-    await sendEmailNotification('due_reminder', { ...baseCtx, dueDate: undefined });
-    const call = vi.mocked(sgMail.send).mock.calls[0][0] as { text: string };
+    // Omit dueDate entirely to satisfy exactOptionalPropertyTypes
+    const { dueDate: _omit, ...ctxNoDueDate } = baseCtx;
+    void _omit;
+    await sendEmailNotification('due_reminder', ctxNoDueDate);
+    const call = vi.mocked(sgMail.send).mock.calls[0]![0]! as { text: string };
     expect(call.text).toContain('soon');
   });
 });
