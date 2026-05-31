@@ -22,6 +22,8 @@ vi.mock('../db/index.js', () => ({ db: mockDb }));
 
 import { getCopyByBarcode, getSpineLabelPdf } from '../services/printing/index.js';
 
+const SCHOOL_ID = 'school-uuid-1';
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockDb.select.mockReturnThis();
@@ -42,7 +44,7 @@ describe('getCopyByBarcode', () => {
         copyNumber: 1,
         condition: 'good',
         location: 'Shelf A1',
-        schoolId: 'school-1',
+        schoolId: SCHOOL_ID,
         acquisitionDate: null,
         purchaseCost: null,
         createdAt: new Date(),
@@ -56,7 +58,7 @@ describe('getCopyByBarcode', () => {
         deweyDecimal: '823.914',
         publisher: 'Test Pub',
         publicationYear: 2020,
-        schoolId: 'school-1',
+        schoolId: SCHOOL_ID,
         description: null,
         coverUrl: null,
         category: null,
@@ -75,7 +77,7 @@ describe('getCopyByBarcode', () => {
     };
     mockDb.limit.mockResolvedValue([fakeRow]);
 
-    const result = await getCopyByBarcode('SCAN123');
+    const result = await getCopyByBarcode('SCAN123', SCHOOL_ID);
 
     expect(result.copy).toEqual(fakeRow.book_inventory);
     expect(result.book).toEqual(fakeRow.books);
@@ -84,7 +86,7 @@ describe('getCopyByBarcode', () => {
   it('throws AppError NOT_FOUND when db returns empty array', async () => {
     mockDb.limit.mockResolvedValue([]);
 
-    await expect(getCopyByBarcode('NOTFOUND')).rejects.toMatchObject({
+    await expect(getCopyByBarcode('NOTFOUND', SCHOOL_ID)).rejects.toMatchObject({
       name: 'AppError',
       code: 'NOT_FOUND',
     });
@@ -105,7 +107,7 @@ describe('getSpineLabelPdf', () => {
       deweyDecimal: '100.1',
       publisher: 'Publisher Co',
       publicationYear: 2021,
-      schoolId: 'school-uuid',
+      schoolId: SCHOOL_ID,
     };
 
     const schoolRow = { name: 'Test School' };
@@ -115,7 +117,7 @@ describe('getSpineLabelPdf', () => {
     // Second call: schools lookup
     mockDb.limit.mockResolvedValueOnce([schoolRow]);
 
-    const result = await getSpineLabelPdf('copy-uuid');
+    const result = await getSpineLabelPdf('copy-uuid', SCHOOL_ID);
 
     expect(Buffer.isBuffer(result)).toBe(true);
     expect(result.toString().startsWith('%PDF')).toBe(true);

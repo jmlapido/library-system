@@ -75,7 +75,14 @@ export async function generateMetadataCardPdf(data: CopyLabelData): Promise<Buff
  */
 export async function generateBulkLabelPdf(copies: CopyLabelData[]): Promise<Buffer> {
   const doc = new PDFDocument({ size: 'LETTER', margin: 36 });
-  const bufferPromise = docToBuffer(doc);
+
+  const bufferPromise = new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+  });
+
   let first = true;
   for (const copy of copies) {
     if (!first) doc.addPage();
@@ -93,6 +100,7 @@ export async function generateBulkLabelPdf(copies: CopyLabelData[]): Promise<Buf
       { align: 'center' }
     );
   }
+
   doc.end();
   return bufferPromise;
 }

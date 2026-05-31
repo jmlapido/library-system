@@ -24,15 +24,24 @@ vi.mock('../services/printing/index.js', () => ({
 }));
 
 let token: string;
+let studentToken: string;
 
 beforeAll(() => {
   token = signAccessToken({ sub: 'user-uuid', role: 'librarian', schoolId: 'school-uuid' });
+  studentToken = signAccessToken({ sub: 'student-uuid', role: 'student', schoolId: 'school-uuid' });
 });
 
 describe('GET /api/v1/copies/barcode/:barcode', () => {
   it('returns 401 without auth token', async () => {
     const res = await app.request('/api/v1/copies/barcode/SCAN123');
     expect(res.status).toBe(401);
+  });
+
+  it('returns 403 for student role', async () => {
+    const res = await app.request('/api/v1/copies/barcode/SCAN123', {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    expect(res.status).toBe(403);
   });
 
   it('returns 200 JSON with copy and book when found', async () => {
@@ -63,6 +72,13 @@ describe('GET /api/v1/print/bulk-labels', () => {
   it('returns 401 without auth token', async () => {
     const res = await app.request('/api/v1/print/bulk-labels?ids=a,b,c');
     expect(res.status).toBe(401);
+  });
+
+  it('returns 403 for student role', async () => {
+    const res = await app.request('/api/v1/print/bulk-labels?ids=a,b,c', {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    expect(res.status).toBe(403);
   });
 
   it('returns 400 when no ids query param provided', async () => {
@@ -98,7 +114,14 @@ describe('GET /api/v1/print/label/:copy_id', () => {
     expect(res.status).toBe(401);
   });
 
-  it('returns 200 with application/pdf when authenticated', async () => {
+  it('returns 403 for student role', async () => {
+    const res = await app.request('/api/v1/print/label/copy-uuid', {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 200 with application/pdf when authenticated as librarian', async () => {
     const res = await app.request('/api/v1/print/label/copy-uuid', {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -108,7 +131,14 @@ describe('GET /api/v1/print/label/:copy_id', () => {
 });
 
 describe('GET /api/v1/print/card/:copy_id', () => {
-  it('returns 200 with application/pdf when authenticated', async () => {
+  it('returns 403 for student role', async () => {
+    const res = await app.request('/api/v1/print/card/copy-uuid', {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 200 with application/pdf when authenticated as librarian', async () => {
     const res = await app.request('/api/v1/print/card/copy-uuid', {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -118,6 +148,13 @@ describe('GET /api/v1/print/card/:copy_id', () => {
 });
 
 describe('GET /api/v1/print/label/:copy_id/zpl', () => {
+  it('returns 403 for student role', async () => {
+    const res = await app.request('/api/v1/print/label/copy-uuid/zpl', {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    expect(res.status).toBe(403);
+  });
+
   it('returns 200 with text/plain ZPL content', async () => {
     const res = await app.request('/api/v1/print/label/copy-uuid/zpl', {
       headers: { Authorization: `Bearer ${token}` },

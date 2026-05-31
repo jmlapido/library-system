@@ -1,7 +1,7 @@
 import { db } from '../../db/index.js';
 import { bookInventory, books } from '../../db/schema/books.js';
 import { schools } from '../../db/schema/schools.js';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { AppError } from '../../utils/errors.js';
 import {
   generateSpineLabelPdf,
@@ -15,8 +15,9 @@ import type { CopyLabelData } from './types.js';
 /**
  * Fetch all data needed to render a copy label.
  * @param copyId - The UUID of the book_inventory row.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-async function getCopyLabelData(copyId: string): Promise<CopyLabelData> {
+async function getCopyLabelData(copyId: string, schoolId: string): Promise<CopyLabelData> {
   const appUrl = process.env.APP_URL ?? 'http://localhost:3000';
 
   const rows = await db
@@ -36,10 +37,10 @@ async function getCopyLabelData(copyId: string): Promise<CopyLabelData> {
     })
     .from(bookInventory)
     .innerJoin(books, eq(bookInventory.bookId, books.id))
-    .where(eq(bookInventory.id, copyId))
+    .where(and(eq(bookInventory.id, copyId), eq(books.schoolId, schoolId)))
     .limit(1);
 
-  if (!rows[0]) throw new AppError('NOT_FOUND', `Copy ${copyId} not found`);
+  if (!rows[0]) throw new AppError('NOT_FOUND', 'Copy not found');
 
   const school = await db
     .select({ name: schools.name })
@@ -53,49 +54,55 @@ async function getCopyLabelData(copyId: string): Promise<CopyLabelData> {
 /**
  * Generate a spine label PDF for a single copy.
  * @param copyId - The UUID of the book_inventory row.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-export async function getSpineLabelPdf(copyId: string): Promise<Buffer> {
-  return generateSpineLabelPdf(await getCopyLabelData(copyId));
+export async function getSpineLabelPdf(copyId: string, schoolId: string): Promise<Buffer> {
+  return generateSpineLabelPdf(await getCopyLabelData(copyId, schoolId));
 }
 
 /**
  * Generate a cover label PDF for a single copy.
  * @param copyId - The UUID of the book_inventory row.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-export async function getCoverLabelPdf(copyId: string): Promise<Buffer> {
-  return generateCoverLabelPdf(await getCopyLabelData(copyId));
+export async function getCoverLabelPdf(copyId: string, schoolId: string): Promise<Buffer> {
+  return generateCoverLabelPdf(await getCopyLabelData(copyId, schoolId));
 }
 
 /**
  * Generate a metadata card PDF for a single copy.
  * @param copyId - The UUID of the book_inventory row.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-export async function getMetadataCardPdf(copyId: string): Promise<Buffer> {
-  return generateMetadataCardPdf(await getCopyLabelData(copyId));
+export async function getMetadataCardPdf(copyId: string, schoolId: string): Promise<Buffer> {
+  return generateMetadataCardPdf(await getCopyLabelData(copyId, schoolId));
 }
 
 /**
  * Generate ZPL spine label string for a single copy.
  * @param copyId - The UUID of the book_inventory row.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-export async function getSpineZpl(copyId: string): Promise<string> {
-  return generateSpineZpl(await getCopyLabelData(copyId));
+export async function getSpineZpl(copyId: string, schoolId: string): Promise<string> {
+  return generateSpineZpl(await getCopyLabelData(copyId, schoolId));
 }
 
 /**
  * Generate a bulk label PDF for multiple copies.
  * @param copyIds - Array of book_inventory UUIDs.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-export async function getBulkLabelsPdf(copyIds: string[]): Promise<Buffer> {
-  const allData = await Promise.all(copyIds.map((id) => getCopyLabelData(id)));
+export async function getBulkLabelsPdf(copyIds: string[], schoolId: string): Promise<Buffer> {
+  const allData = await Promise.all(copyIds.map((id) => getCopyLabelData(id, schoolId)));
   return generateBulkLabelPdf(allData);
 }
 
 /**
  * Look up a book inventory copy by barcode.
  * @param barcode - The barcode string on the copy.
+ * @param schoolId - The caller's school UUID for cross-school isolation.
  */
-export async function getCopyByBarcode(barcode: string): Promise<{
+export async function getCopyByBarcode(barcode: string, schoolId: string): Promise<{
   copy: typeof bookInventory.$inferSelect;
   book: typeof books.$inferSelect;
 }> {
@@ -103,9 +110,9 @@ export async function getCopyByBarcode(barcode: string): Promise<{
     .select()
     .from(bookInventory)
     .innerJoin(books, eq(bookInventory.bookId, books.id))
-    .where(eq(bookInventory.barcode, barcode))
+    .where(and(eq(bookInventory.barcode, barcode), eq(books.schoolId, schoolId)))
     .limit(1);
 
-  if (!rows[0]) throw new AppError('NOT_FOUND', `No copy found for barcode ${barcode}`);
+  if (!rows[0]) throw new AppError('NOT_FOUND', 'Copy not found');
   return { copy: rows[0].book_inventory, book: rows[0].books };
 }
