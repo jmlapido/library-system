@@ -59,7 +59,6 @@ async function processOverdueCheckouts(appUrl: string): Promise<void> {
       lateFee: checkouts.lateFee,
       userFullName: users.fullName,
       userEmail: users.email,
-      userPhone: users.notificationChannel,
       userChannel: users.notificationChannel,
       schoolId: users.schoolId,
       bookTitle: books.title,
