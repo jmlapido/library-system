@@ -3,6 +3,7 @@ import { AppShell } from './components/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './features/auth/LoginPage';
 import { StaffManagementPage } from './features/staff-management/StaffManagementPage';
+import { CirculationPage } from './features/circulation/CirculationPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -37,7 +38,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
           </ProtectedRoute>
         ),
       },
-      { path: '/circulation', element: <div className="p-6 text-muted-foreground">Circulation — coming in Task 32</div> },
+      {
+        path: '/circulation',
+        element: (
+          <ProtectedRoute roles={['librarian', 'library_assistant', 'admin']}>
+            <CirculationPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: '/shelving-queue', element: <div className="p-6 text-muted-foreground">Shelving Queue — coming in Task 32</div> },
       {
         path: '/catalog',
