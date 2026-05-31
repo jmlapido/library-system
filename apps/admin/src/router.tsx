@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './features/auth/LoginPage';
+import { StaffManagementPage } from './features/staff-management/StaffManagementPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -24,7 +25,7 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         path: '/staff-management',
         element: (
           <ProtectedRoute roles={['librarian', 'admin']}>
-            <div className="p-6 text-muted-foreground">Staff Management — loading…</div>
+            <StaffManagementPage />
           </ProtectedRoute>
         ),
       },
