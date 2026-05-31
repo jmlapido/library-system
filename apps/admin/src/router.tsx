@@ -10,7 +10,7 @@ function RoleRedirect() {
   return <Navigate to="/circulation" replace />;
 }
 
-export const router = createBrowserRouter([
+export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   {
     element: (

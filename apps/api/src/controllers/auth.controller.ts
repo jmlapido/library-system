@@ -22,12 +22,8 @@ export async function loginController(c: Context) {
     return c.json({ success: true, data: result, message: 'Login successful' });
   } catch (err) {
     if (err instanceof AppError) {
-      if (err.code === 'INVALID_CREDENTIALS') {
-        return c.json({ success: false, error: 'Invalid credentials', code: err.code }, 401);
-      }
-      if (err.code === 'ACCOUNT_INACTIVE') {
-        return c.json({ success: false, error: 'Account is inactive', code: err.code }, 403);
-      }
+      const status = err.code === 'INVALID_CREDENTIALS' ? 401 : 403;
+      return c.json({ success: false, error: err.message, code: err.code }, status);
     }
     throw err;
   }
