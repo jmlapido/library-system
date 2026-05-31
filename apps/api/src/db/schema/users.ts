@@ -30,6 +30,7 @@ export const users = pgTable('users', {
   approvalStatus: approvalStatusEnum('approval_status').default('approved').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  notificationChannel: varchar('notification_channel', { length: 10 }),
 }, (table) => [
   index('users_school_id_idx').on(table.schoolId),
   index('users_role_idx').on(table.role),
