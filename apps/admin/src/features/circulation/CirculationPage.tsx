@@ -110,7 +110,7 @@ function ScanTabContent({ scannedBarcode }: TabPanelProps) {
 export function CirculationPage() {
   const [checkoutBarcode, setCheckoutBarcode] = useState<string | null>(null);
   const [returnBarcode, setReturnBarcode] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('checkout');
+  const [activeTab, setActiveTab] = useState<'checkout' | 'return'>('checkout');
 
   const handleScan = useCallback(
     (barcode: string) => {
@@ -128,7 +128,7 @@ export function CirculationPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Circulation Desk</h1>
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'checkout' | 'return')}>
         <TabsList>
           <TabsTrigger value="checkout">Checkout</TabsTrigger>
           <TabsTrigger value="return">Return</TabsTrigger>

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CirculationPage } from '../CirculationPage';
 
@@ -78,7 +78,7 @@ describe('CirculationPage', () => {
     });
 
     setup();
-    capturedOnScan?.('BARCODE123');
+    await act(async () => { capturedOnScan?.('BARCODE123'); });
 
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith('/copies/barcode/BARCODE123');
@@ -103,7 +103,7 @@ describe('CirculationPage', () => {
     });
 
     setup();
-    capturedOnScan?.('BARCODE123');
+    await act(async () => { capturedOnScan?.('BARCODE123'); });
 
     await waitFor(() => {
       expect(screen.getByText('To Kill a Mockingbird')).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe('CirculationPage', () => {
     );
 
     setup();
-    capturedOnScan?.('UNKNOWN999');
+    await act(async () => { capturedOnScan?.('UNKNOWN999'); });
 
     await waitFor(() => {
       expect(
@@ -133,7 +133,7 @@ describe('CirculationPage', () => {
     vi.mocked(api.get).mockRejectedValue(new Error('Network error'));
 
     setup();
-    capturedOnScan?.('BAD001');
+    await act(async () => { capturedOnScan?.('BAD001'); });
 
     await waitFor(() => {
       expect(

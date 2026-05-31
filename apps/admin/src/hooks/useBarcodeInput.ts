@@ -2,14 +2,15 @@ import { useEffect, useRef } from 'react';
 
 interface UseBarcodeInputOptions {
   onScan: (barcode: string) => void;
+  /** Max ms between keystrokes to still be considered part of the same scan */
   maxKeystrokeGap?: number;
   minLength?: number;
 }
 
 /**
- * Listens for USB barcode scanner input on window keydown events.
- * USB scanners type characters rapidly (< 30ms between keystrokes) then send Enter.
- * Fires onScan when Enter completes a rapid burst of sufficient length.
+ * Listens for USB barcode scanner input (rapid keystrokes ending with Enter).
+ * Fires onScan with the accumulated barcode string.
+ * onScan is intentionally not in useEffect deps — latest value is read via ref.
  */
 export function useBarcodeInput({
   onScan,
@@ -18,6 +19,8 @@ export function useBarcodeInput({
 }: UseBarcodeInputOptions): void {
   const buffer = useRef('');
   const lastKeyTime = useRef(0);
+  const onScanRef = useRef(onScan);
+  onScanRef.current = onScan;
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -33,7 +36,7 @@ export function useBarcodeInput({
         const scanned = buffer.current.trim();
         buffer.current = '';
         if (scanned.length >= minLength) {
-          onScan(scanned);
+          onScanRef.current(scanned);
         }
         return;
       }
@@ -45,5 +48,5 @@ export function useBarcodeInput({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onScan, maxKeystrokeGap, minLength]);
+  }, [maxKeystrokeGap, minLength]);
 }

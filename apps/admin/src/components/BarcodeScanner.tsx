@@ -8,15 +8,19 @@ interface BarcodeScannerProps {
 
 /**
  * Camera-based barcode scanner using Quagga2.
- * Uses onScanRef to avoid stale closure issues with the onScan callback.
+ * Uses onScanRef/onErrorRef to avoid stale closure issues.
+ * Guards against React StrictMode double-invoke with a cancelled flag.
  */
 export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
   const scannerRef = useRef<HTMLDivElement>(null);
   const onScanRef = useRef(onScan);
   onScanRef.current = onScan;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
 
   useEffect(() => {
     if (!scannerRef.current) return;
+    let cancelled = false;
 
     Quagga.init(
       {
@@ -29,8 +33,9 @@ export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
         locate: true,
       },
       (err) => {
+        if (cancelled) { Quagga.stop(); return; }
         if (err) {
-          onError?.(err instanceof Error ? err : new Error(String(err)));
+          onErrorRef.current?.(err instanceof Error ? err : new Error(String(err)));
           return;
         }
         Quagga.start();
@@ -43,6 +48,7 @@ export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
     });
 
     return () => {
+      cancelled = true;
       Quagga.offDetected();
       Quagga.stop();
     };
