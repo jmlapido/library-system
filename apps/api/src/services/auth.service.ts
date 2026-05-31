@@ -5,6 +5,7 @@ import { users, refreshTokens } from '../db/schema/index.js';
 import { signAccessToken, signRefreshToken } from '../lib/jwt.js';
 import type { LoginInput } from 'shared';
 import { AppError } from '../utils/errors.js';
+import { getEffectivePermissions } from './permissions.service.js';
 export { AppError };
 
 /**
@@ -113,4 +114,29 @@ export async function logout(rawToken: string): Promise<void> {
       return;
     }
   }
+}
+
+/**
+ * Returns the current user's profile enriched with effective permissions.
+ * Called by the /me endpoint so the frontend has permissions on first load.
+ * @param userId - The user's UUID from the access token.
+ * @param role - The user's role from the access token.
+ * @throws AppError USER_NOT_FOUND if the user no longer exists.
+ */
+export async function getMe(userId: string, role: string) {
+  const [user] = await db
+    .select({
+      id: users.id,
+      fullName: users.fullName,
+      role: users.role,
+      schoolId: users.schoolId,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user) throw new AppError('USER_NOT_FOUND', 'User not found');
+
+  const effectivePermissions = await getEffectivePermissions(userId, role);
+  return { ...user, effectivePermissions };
 }

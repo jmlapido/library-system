@@ -175,3 +175,25 @@ export async function listPendingStaff(schoolId: string) {
     .from(users)
     .where(and(eq(users.approvalStatus, 'pending'), eq(users.schoolId, schoolId)));
 }
+
+/**
+ * List all approved, active staff accounts for a school.
+ * @param schoolId - Scopes the query to the admin's school.
+ */
+export async function listActiveStaff(schoolId: string) {
+  return db
+    .select({
+      id: users.id,
+      email: users.email,
+      fullName: users.fullName,
+      role: users.role,
+    })
+    .from(users)
+    .where(
+      and(
+        eq(users.approvalStatus, 'approved'),
+        eq(users.schoolId, schoolId),
+        eq(users.isActive, true),
+      ),
+    );
+}

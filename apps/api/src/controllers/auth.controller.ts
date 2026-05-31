@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { LoginSchema } from 'shared';
-import { AppError, login, refreshSession, logout } from '../services/auth.service.js';
+import { AppError, login, refreshSession, logout, getMe } from '../services/auth.service.js';
 
 /** POST /api/v1/auth/login */
 export async function loginController(c: Context) {
@@ -76,6 +76,14 @@ export async function logoutController(c: Context) {
 
 /** GET /api/v1/auth/me */
 export async function meController(c: Context) {
-  const user = c.get('user');
-  return c.json({ success: true, data: user });
+  const { sub, role } = c.get('user');
+  try {
+    const data = await getMe(sub, role);
+    return c.json({ success: true, data });
+  } catch (err) {
+    if (err instanceof AppError) {
+      return c.json({ success: false, error: err.message, code: err.code }, 404);
+    }
+    throw err;
+  }
 }

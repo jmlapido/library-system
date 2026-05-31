@@ -142,3 +142,17 @@ export async function createByAdmin(c: Context) {
     return errorResponse(c, err);
   }
 }
+
+/**
+ * GET /api/v1/admin/staff
+ * List all approved, active staff for the admin's school.
+ */
+export async function listActive(c: Context) {
+  const user = c.get('user') as AccessTokenPayload;
+  try {
+    const data = await staffService.listActiveStaff(user.schoolId);
+    return c.json({ success: true, data });
+  } catch (err) {
+    return errorResponse(c, err);
+  }
+}
