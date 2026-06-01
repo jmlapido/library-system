@@ -4,6 +4,8 @@ import { checkouts, holds } from '../db/schema/circulation.js';
 import { bookInventory, books } from '../db/schema/books.js';
 import { AppError } from '../utils/errors.js';
 import { refreshBookIndex } from './catalog.service.js';
+import { checkAndAwardBadges } from './badges.service.js';
+import { updateChallengeProgressOnCheckout } from './challenges.service.js';
 import type { AccessTokenPayload } from '../lib/jwt.js';
 import type { CheckoutInput, ReturnInput, AdvanceStageInput, RenewInput, PlaceHoldInput } from 'shared';
 
@@ -65,6 +67,8 @@ export async function checkout(input: CheckoutInput, requestor: AccessTokenPaylo
 
   await db.update(bookInventory).set({ status: 'checked_out', updatedAt: new Date() }).where(eq(bookInventory.id, copy.id));
   await refreshBookIndex(copy.bookId);
+  checkAndAwardBadges(userId, schoolId).catch(() => {}); // non-blocking
+  updateChallengeProgressOnCheckout(userId, schoolId).catch(() => {}); // non-blocking
   return record;
 }
 

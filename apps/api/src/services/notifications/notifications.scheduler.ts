@@ -5,8 +5,10 @@ import { checkouts, holds } from '../../db/schema/circulation.js';
 import { users } from '../../db/schema/users.js';
 import { books, bookInventory } from '../../db/schema/books.js';
 import { schools } from '../../db/schema/schools.js';
+import { pushSubscriptions } from '../../db/schema/pushSubscriptions.js';
 import { eq, lt, and, inArray, gte, lte } from 'drizzle-orm';
 import { sendNotification } from './notifications.service.js';
+import { sendPushNotification } from './push.provider.js';
 import type { NotificationContext } from './types.js';
 
 const QUEUE_NAME = 'notification-scheduler';
@@ -110,6 +112,15 @@ async function processDueReminders(appUrl: string): Promise<void> {
   }
 }
 
+/** Fetch all FCM tokens registered for a user. Returns empty array if none. */
+async function getFcmTokens(userId: string): Promise<string[]> {
+  const rows = await db
+    .select({ fcmToken: pushSubscriptions.fcmToken })
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, userId));
+  return rows.map((r) => r.fcmToken);
+}
+
 /** Extract reminder_days_before from school settings, defaulting to [3, 1]. */
 function getReminderDays(settings: Record<string, unknown> | null): number[] {
   const val = settings?.reminder_days_before;
@@ -154,6 +165,7 @@ async function sendRemindersForDayOffset(
 
   for (const row of rows) {
     try {
+      const fcmTokens = await getFcmTokens(row.userId);
       const ctx: NotificationContext = {
         userId: row.userId,
         schoolId: row.userSchoolId,
@@ -164,9 +176,17 @@ async function sendRemindersForDayOffset(
         userChannel: row.userChannel,
         bookTitle: row.bookTitle,
         dueDate: row.dueDate,
+        fcmTokens,
         appUrl,
       };
       await sendNotification('due_reminder', ctx);
+      await sendPushNotification(
+        fcmTokens,
+        'Book Due Soon',
+        `Your book "${row.bookTitle}" is due in ${daysOffset} day${daysOffset === 1 ? '' : 's'}.`,
+        { type: 'due_reminder', bookTitle: row.bookTitle },
+        row.userId
+      );
     } catch {
       console.error(`[scheduler] due_reminder failed for userId=${row.userId}`);
     }
@@ -197,6 +217,7 @@ async function processHoldReady(appUrl: string): Promise<void> {
 
   for (const row of rows) {
     try {
+      const fcmTokens = await getFcmTokens(row.userId);
       const ctx: NotificationContext = {
         userId: row.userId,
         schoolId: row.schoolId,
@@ -206,6 +227,7 @@ async function processHoldReady(appUrl: string): Promise<void> {
         userPhone: null,
         userChannel: row.userChannel,
         bookTitle: row.bookTitle,
+        fcmTokens,
         appUrl,
       };
       const result = await sendNotification('hold_ready', ctx);
@@ -214,6 +236,17 @@ async function processHoldReady(appUrl: string): Promise<void> {
           .update(holds)
           .set({ notified: true })
           .where(eq(holds.id, row.holdId));
+      }
+      try {
+        await sendPushNotification(
+          fcmTokens,
+          'Hold Ready for Pickup',
+          `Your hold for "${row.bookTitle}" is ready for pickup.`,
+          { type: 'hold_ready', bookTitle: row.bookTitle },
+          row.userId
+        );
+      } catch {
+        console.error(`[scheduler] hold_ready push failed for userId=${row.userId}`);
       }
     } catch {
       console.error(`[scheduler] hold_ready failed for userId=${row.userId}`);

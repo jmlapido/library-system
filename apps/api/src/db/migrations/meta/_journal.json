@@ -36,6 +36,27 @@
       "when": 1780233489669,
       "tag": "0004_swift_polaris",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780233871145,
+      "tag": "0005_nervous_jazinda",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780257175275,
+      "tag": "0006_freezing_lila_cheney",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1780292124068,
+      "tag": "0007_dry_songbird",
+      "breakpoints": true
     }
   ]
 }

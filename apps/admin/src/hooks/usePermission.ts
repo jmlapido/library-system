@@ -7,5 +7,5 @@ import { useAuthStore } from '../stores/auth';
 export function usePermission(permission: string): boolean {
   const user = useAuthStore((s) => s.user);
   if (!user) return false;
-  return user.effectivePermissions.includes(permission);
+  return user.effectivePermissions?.includes(permission) ?? false;
 }

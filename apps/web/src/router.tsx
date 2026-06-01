@@ -7,6 +7,11 @@ import { BookDetailPage } from './pages/BookDetailPage';
 import { MyBooksPage } from './pages/MyBooksPage';
 import { ScanPage } from './pages/ScanPage';
 import { AccountPage } from './pages/AccountPage';
+import { ReadingListsPage } from './pages/ReadingListsPage';
+import { ReadingListDetailPage } from './pages/ReadingListDetailPage';
+import { BookClubsPage } from './pages/BookClubsPage';
+import { BookClubDetailPage } from './pages/BookClubDetailPage';
+import { AchievementsPage } from './pages/AchievementsPage';
 
 /** Authenticated layout wrapper: gradient background + fixed bottom nav. */
 function AppShell() {
@@ -39,6 +44,11 @@ export const router = createBrowserRouter([
           { path: '/my-books', element: <MyBooksPage /> },
           { path: '/scan', element: <ScanPage /> },
           { path: '/account', element: <AccountPage /> },
+          { path: '/reading-lists', element: <ReadingListsPage /> },
+          { path: '/reading-lists/:id', element: <ReadingListDetailPage /> },
+          { path: '/book-clubs', element: <BookClubsPage /> },
+          { path: '/book-clubs/:id', element: <BookClubDetailPage /> },
+          { path: '/achievements', element: <AchievementsPage /> },
         ],
       },
     ],

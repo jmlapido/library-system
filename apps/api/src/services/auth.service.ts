@@ -48,10 +48,12 @@ export async function login(input: LoginInput) {
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
+  const effectivePermissions = await getEffectivePermissions(user.id, user.role);
+
   return {
     accessToken,
     refreshToken: rawRefreshToken,
-    user: { id: user.id, fullName: user.fullName, role: user.role, schoolId: user.schoolId },
+    user: { id: user.id, fullName: user.fullName, role: user.role, schoolId: user.schoolId, effectivePermissions },
   };
 }
 

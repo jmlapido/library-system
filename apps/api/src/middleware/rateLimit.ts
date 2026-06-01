@@ -16,6 +16,11 @@ const store = new Map<string, RateLimitEntry>();
  */
 export function rateLimitAuth(maxAttempts = 5, windowMs = 15 * 60 * 1000) {
   return createMiddleware(async (c, next) => {
+    if (process.env.NODE_ENV === 'development') {
+      await next();
+      return;
+    }
+
     const ip =
       c.req.header('x-forwarded-for') ??
       c.req.header('x-real-ip') ??

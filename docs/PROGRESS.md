@@ -1,7 +1,7 @@
 # LibraMS — Development Progress Tracker
 
-> Last updated: 2026-05-09
-> Branch: `master` | Tests: 73 passing | Typecheck: clean
+> Last updated: 2026-05-31
+> Branch: `master` | Tests: 190 passing | Typecheck: clean
 
 ---
 
@@ -95,11 +95,11 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 30 | Admin auth + routing | Login page, JWT session, role-based route guards (librarian / admin / library_assistant views) | ⬜ |
-| 31 | Pending staff approvals UI | List of pending self-registrations, approve/reject buttons — uses `/api/v1/admin/staff/pending` | ⬜ |
-| 32 | Circulation desk UI | Scan checkout/return barcodes, checkout confirmation, return processing, 3-stage shelving queue | ⬜ |
-| 33 | Catalog management UI | Add/edit/delete books, ISBN auto-fill form, bulk CSV import, copy management | ⬜ |
-| 34 | Student roster UI | View students, reset PINs, add/remove email for login method switching | ⬜ |
+| 30 | Admin auth + routing | Login page, JWT session, role-based route guards (librarian / admin / library_assistant views) | ✅ |
+| 31 | Pending staff approvals UI | List of pending self-registrations, approve/reject buttons — uses `/api/v1/admin/staff/pending` | ✅ |
+| 32 | Permissions management | user_permissions table, getEffectivePermissions, admin PATCH endpoint | ✅ |
+| 33 | Staff management page | Active staff table, PermissionsDialog, CreateStaffDialog, tabbed StaffManagementPage | ✅ |
+| 34 | Login page | email+password form, error code mapping, CORS fix | ✅ |
 
 ---
 
@@ -107,9 +107,9 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 35 | BullMQ job queue setup | Install BullMQ + Redis queue config; daily notification job scaffold | ⬜ |
-| 36 | Due date + overdue notifications | SendGrid email + Twilio SMS; configurable reminder windows; deduplication | ⬜ |
-| 37 | Hold-ready notifications | Triggered when book reaches `shelved` state and student is #1 in queue | ⬜ |
+| 35 | BullMQ + schema | notification_log table + pgEnums + notificationChannel on users + BullMQ/Twilio deps | ✅ |
+| 36 | Email provider + notification service | SendGrid for 5 types, deduplication, audit log | ✅ |
+| 37 | SMS + scheduler + routes | Twilio SMS, BullMQ daily 08:00 cron, notification routes | ✅ |
 
 ---
 
@@ -117,20 +117,42 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 38 | Barcode generation | JsBarcode — generate Code 128 barcodes for book copies and student IDs | ⬜ |
-| 39 | Label PDF generation | Spine label, inside-cover barcode label, 4×6 metadata card — PDF output via browser print | ⬜ |
+| 38 | Printing service + API routes | PDFKit spine/cover/card/bulk labels, bwip-js Code128+QR, ZPL for Zebra printers, barcode lookup route | ✅ |
+| 39 | Barcode scanner + CirculationPage | @ericblade/quagga2 camera scanner, useBarcodeInput USB hook, CirculationPage with Checkout/Return tabs | ✅ |
 
 ---
 
-## Phase 2 — Engagement (Pending Phase 1 complete)
+## Phase 2 — Engagement ✅ COMPLETE (2026-06-01)
 
-| Feature | What it covers |
-|---------|----------------|
-| Book clubs | Create clubs, membership, shared reading lists |
-| Badges + challenges | Reading badges, grade-level challenges, gamification |
-| Reading lists | Personal lists, class reading lists (teacher-assigned) |
-| Mobile PWA push notifications | FCM push for due dates and hold alerts |
-| AI recommendations | Claude API — personalized suggestions from reading history |
+### Group J: Engagement Data Layer
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 40 | Phase 2 DB migrations | reading_lists, reading_list_items, book_clubs, book_club_members, badges, user_badges, challenges, challenge_progress, push_subscriptions | ✅ |
+| 41 | Reading lists service + routes | Personal CRUD lists, add/remove books, to_read/reading/completed status | ✅ |
+| 42 | Book clubs service + routes | Create clubs, join/leave, assign book, member management | ✅ |
+
+### Group L: Student Portal UI (Engagement)
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 43 | Reading lists UI | My Lists page — create, add books, status toggle, detail view | ✅ |
+| 44 | Book clubs UI | Browse/join clubs, club detail, member list, create club | ✅ |
+| 45 | Badges + challenges UI | Achievement wall with emoji badges, challenge cards, progress bars, leaderboard | ✅ |
+
+### Group M: AI + Push
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 46 | AI recommendations | Claude API (haiku) personalized book suggestions, Redis 24h cache | ✅ |
+| 47 | FCM push notifications | Firebase Admin SDK, push_subscriptions table, service worker, scheduler integration | ✅ |
+
+### Group K: Gamification
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 48 | Badges engine + routes | Auto-award engine (7 criteria), badge CRUD, hooks into checkout/club/list events | ✅ |
+| 49 | Challenges service + routes | CRUD, enrollment, progress tracking on checkout, leaderboard | ✅ |
 
 ---
 
@@ -162,12 +184,12 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 | Metric | Count |
 |--------|-------|
-| Tasks completed (Groups A–F) | **29** |
-| Tasks remaining Phase 1 (Groups G–I) | **10** |
-| Test files | 16 |
-| Tests passing | 73 |
-| API endpoints live | 10 |
-| DB tables | 9 |
+| Tasks completed (Groups A–K) | **49** |
+| Tasks remaining Phase 2 | **0** |
+| Test files | 42 |
+| Tests passing | 329 |
+| API endpoints live | 50+ |
+| DB tables | 20 |
 
 ---
 

@@ -24,4 +24,6 @@ export interface NotificationContext {
   daysOverdue?: number;
   fineAmount?: number;
   appUrl: string;
+  /** FCM registration tokens for the user — used by push provider. */
+  fcmTokens?: string[];
 }

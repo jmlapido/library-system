@@ -8,6 +8,7 @@ import { schools, users } from '../db/schema/index.js';
 let schoolId: string;
 
 beforeAll(async () => {
+  await db.delete(users).where(eq(users.email, 'staff@route.test'));
   const [school] = await db.insert(schools).values({ name: 'Route Test School' }).returning();
   schoolId = school!.id;
   await db.insert(users).values({
