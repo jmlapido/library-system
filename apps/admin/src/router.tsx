@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './features/auth/LoginPage';
 import { StaffManagementPage } from './features/staff-management/StaffManagementPage';
 import { CirculationPage } from './features/circulation/CirculationPage';
+import { ReportsPage } from './features/reports/ReportsPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -27,6 +28,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['librarian', 'admin']}>
             <StaffManagementPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/reports',
+        element: (
+          <ProtectedRoute roles={['librarian', 'admin']}>
+            <ReportsPage />
           </ProtectedRoute>
         ),
       },

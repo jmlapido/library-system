@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { label: 'Catalog', to: '/catalog', roles: ['librarian', 'admin'], permission: 'catalog.view' },
   { label: 'Staff Management', to: '/staff-management', roles: ['librarian', 'admin'] },
   { label: 'Students', to: '/students', roles: ['librarian', 'admin'], permission: 'students.view' },
+  { label: 'Reports', to: '/reports', roles: ['librarian', 'admin'] },
   { label: 'Audit Log', to: '/audit-log', roles: ['admin'] },
 ] as const;
 
