@@ -1,0 +1,48 @@
+{
+  "title": "LibraMS API",
+  "uid": "librams-api",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Request Rate (req/s)",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "rate(librams_http_requests_total[1m])", "legendFormat": "req/s" }]
+    },
+    {
+      "id": 2, "type": "stat", "title": "Error Rate (5xx)",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "rate(librams_http_requests_total{status=~\"5..\"}[1m])", "legendFormat": "errors/s" }]
+    },
+    {
+      "id": 3, "type": "stat", "title": "p95 Latency (s)",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(librams_http_request_duration_seconds_bucket[5m]))", "legendFormat": "p95" }]
+    },
+    {
+      "id": 4, "type": "stat", "title": "Checkout Events",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "increase(librams_checkout_events_total[1h])", "legendFormat": "{{action}}" }]
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "HTTP Request Duration (p50/p95/p99)",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(librams_http_request_duration_seconds_bucket[5m]))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, rate(librams_http_request_duration_seconds_bucket[5m]))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, rate(librams_http_request_duration_seconds_bucket[5m]))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Node.js Heap Usage",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "targets": [{ "expr": "nodejs_heap_size_used_bytes", "legendFormat": "heap used" }]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Import Jobs",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "targets": [{ "expr": "increase(librams_import_jobs_total[1h])", "legendFormat": "{{type}} / {{result}}" }]
+    }
+  ]
+}

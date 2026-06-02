@@ -17,10 +17,13 @@ import { challengesRouter } from './routes/challenges.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { importRouter } from './routes/import.js';
 import { schoolsRouter } from './routes/schools.js';
+import { registry } from './lib/metrics.js';
+import { metricsMiddleware } from './middleware/metrics.js';
 
 export const app = new Hono();
 
 app.use('*', logger());
+app.use('/api/*', metricsMiddleware);
 
 const corsOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
@@ -37,6 +40,12 @@ app.use(
 app.get('/health', (c) =>
   c.json({ status: 'ok', timestamp: new Date().toISOString() })
 );
+
+/** Prometheus scrape endpoint — no auth required (firewall in production). */
+app.get('/metrics', async (c) => {
+  const metrics = await registry.metrics();
+  return c.text(metrics, 200, { 'Content-Type': registry.contentType });
+});
 
 app.route('/api/v1/auth', authRouter);
 app.route('/api/v1/auth', staffAuthRouter);
