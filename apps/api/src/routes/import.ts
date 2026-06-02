@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { requireAuth, requireRole } from '../middleware/auth.js';
-import { importStudentsController, importBooksController } from '../controllers/import.controller.js';
+import { importStudentsController, importBooksController, importMarcController } from '../controllers/import.controller.js';
 import type { AccessTokenPayload } from '../lib/jwt.js';
 
 type Variables = { user: AccessTokenPayload };
@@ -19,4 +19,11 @@ importRouter.post(
   requireAuth,
   requireRole('librarian', 'admin'),
   importBooksController,
+);
+
+importRouter.post(
+  '/books/import/marc',
+  requireAuth,
+  requireRole('librarian', 'admin'),
+  importMarcController,
 );
