@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 
 const NAV_ITEMS = [
+  { label: 'Dashboard', to: '/dashboard', roles: ['library_assistant', 'librarian', 'admin'] },
   { label: 'Circulation Desk', to: '/circulation', roles: ['library_assistant', 'librarian', 'admin'] },
   { label: 'Shelving Queue', to: '/shelving-queue', roles: ['library_assistant', 'librarian', 'admin'] },
   { label: 'Catalog', to: '/catalog', roles: ['librarian', 'admin'], permission: 'catalog.view' },

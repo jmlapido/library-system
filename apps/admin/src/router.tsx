@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './features/auth/LoginPage';
+import { DashboardPage } from './features/dashboard/DashboardPage';
 import { StaffManagementPage } from './features/staff-management/StaffManagementPage';
 import { CirculationPage } from './features/circulation/CirculationPage';
 import { ReportsPage } from './features/reports/ReportsPage';
@@ -15,8 +16,7 @@ import { useAuthStore } from './stores/auth';
 function RoleRedirect() {
   const role = useAuthStore((s) => s.user?.role);
   if (role === 'super_admin') return <Navigate to="/schools" replace />;
-  if (role === 'admin') return <Navigate to="/staff-management" replace />;
-  return <Navigate to="/circulation" replace />;
+  return <Navigate to="/dashboard" replace />;
 }
 
 export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
@@ -30,6 +30,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
     ),
     children: [
       { index: true, element: <RoleRedirect /> },
+      {
+        path: '/dashboard',
+        element: (
+          <ProtectedRoute roles={['librarian', 'library_assistant', 'admin']}>
+            <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: '/staff-management',
         element: (
