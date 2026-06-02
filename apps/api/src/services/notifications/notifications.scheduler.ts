@@ -9,23 +9,44 @@ import { pushSubscriptions } from '../../db/schema/pushSubscriptions.js';
 import { eq, lt, and, inArray, gte, lte } from 'drizzle-orm';
 import { sendNotification } from './notifications.service.js';
 import { sendPushNotification } from './push.provider.js';
+import { SchoolSettingsSchema, DEFAULT_SETTINGS } from '../school.service.js';
 import type { NotificationContext } from './types.js';
+import type { SchoolSettings } from '../school.service.js';
 
 const QUEUE_NAME = 'notification-scheduler';
 
+/** Default cron expression matching DEFAULT_SETTINGS.notificationTime "08:00". */
+const DEFAULT_CRON = '0 8 * * *';
+
 /**
- * Start the BullMQ scheduler that runs daily notification jobs at 08:00.
- * No-op when NODE_ENV=test.
+ * Parse a "HH:MM" time string into a cron expression "M H * * *".
+ * Falls back to DEFAULT_CRON on invalid input.
+ */
+function timeToCron(time: string): string {
+  const match = /^(\d{2}):(\d{2})$/.exec(time);
+  if (!match) return DEFAULT_CRON;
+  const [, hh, mm] = match;
+  return `${Number(mm)} ${Number(hh)} * * *`;
+}
+
+/**
+ * Start the BullMQ scheduler for daily notification jobs.
+ * Reads notificationTime from env NOTIFICATION_TIME (set at deploy time) or defaults
+ * to "08:00". Logs a warning if any school's notificationTime differs — full dynamic
+ * reschedule is out of scope for Phase 1.
  */
 export function startNotificationScheduler(): void {
   const connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
     maxRetriesPerRequest: null,
   });
 
+  const configuredTime = process.env.NOTIFICATION_TIME ?? DEFAULT_SETTINGS.notificationTime;
+  const cronPattern = timeToCron(configuredTime);
+
   const queue = new Queue(QUEUE_NAME, { connection });
 
   queue.add('run-daily-notifications', {}, {
-    repeat: { pattern: '0 8 * * *' },
+    repeat: { pattern: cronPattern },
     jobId: 'daily-notifications',
   }).catch((err) => {
     console.error('Failed to register notification job:', (err as Error).message);
@@ -38,20 +59,54 @@ export function startNotificationScheduler(): void {
 
 /**
  * Execute all daily notification batches.
+ * Reads per-school settings from DB at job execution time.
  * Exported for direct invocation in tests.
  */
 export async function runDailyNotifications(): Promise<void> {
   const appUrl = process.env.APP_URL ?? 'http://localhost:3000';
-  await processOverdueCheckouts(appUrl);
-  await processDueReminders(appUrl);
+  const allSchools = await db.select().from(schools);
+
+  const configuredTime = process.env.NOTIFICATION_TIME ?? DEFAULT_SETTINGS.notificationTime;
+
+  for (const school of allSchools) {
+    const settings = parseSchoolSettings(school.settings);
+
+    if (settings.notificationTime !== configuredTime) {
+      console.warn(
+        `[scheduler] school ${school.id} notificationTime="${settings.notificationTime}" ` +
+        `differs from active cron time="${configuredTime}". Restart with NOTIFICATION_TIME=${settings.notificationTime} to apply.`
+      );
+    }
+
+    await processOverdueCheckouts(school.id, settings, appUrl);
+    await sendRemindersForSchool(school.id, settings.reminderDaysBefore, appUrl);
+  }
+
   await processHoldReady(appUrl);
   await processHoldExpired(appUrl);
 }
 
 /**
- * Send overdue notices for all checkouts past due date.
+ * Parse and validate raw JSONB settings for a school.
+ * Falls back to DEFAULT_SETTINGS on any validation error.
  */
-async function processOverdueCheckouts(appUrl: string): Promise<void> {
+function parseSchoolSettings(raw: Record<string, unknown> | null): SchoolSettings {
+  const result = SchoolSettingsSchema.safeParse({ ...DEFAULT_SETTINGS, ...(raw ?? {}) });
+  return result.success ? result.data : DEFAULT_SETTINGS;
+}
+
+/**
+ * Send overdue notices per school, respecting gracePeriodDays and overdueRepeatEvery.
+ * Grace period: skip rows where daysOverdue <= gracePeriodDays.
+ * Repeat throttle: deduplication in notifications.service handles daily sends;
+ * overdueRepeatEvery controls whether we flag the record for re-notification
+ * by checking if daysOverdue is a multiple of overdueRepeatEvery (after grace).
+ */
+async function processOverdueCheckouts(
+  schoolId: string,
+  settings: SchoolSettings,
+  appUrl: string
+): Promise<void> {
   const now = new Date();
   const rows = await db
     .select({
@@ -71,12 +126,16 @@ async function processOverdueCheckouts(appUrl: string): Promise<void> {
     .innerJoin(books, eq(bookInventory.bookId, books.id))
     .where(and(
       inArray(checkouts.status, ['checked_out', 'overdue']),
-      lt(checkouts.dueDate, now)
+      lt(checkouts.dueDate, now),
+      eq(users.schoolId, schoolId)
     ));
 
   for (const row of rows) {
     try {
       const daysOverdue = Math.floor((now.getTime() - row.dueDate.getTime()) / 86_400_000);
+      if (!shouldSendOverdue(daysOverdue, settings.gracePeriodDays, settings.overdueRepeatEvery)) {
+        continue;
+      }
       const ctx: NotificationContext = {
         userId: row.userId,
         schoolId: row.schoolId!,
@@ -99,16 +158,31 @@ async function processOverdueCheckouts(appUrl: string): Promise<void> {
 }
 
 /**
- * Send due reminders based on each school's configured reminder_days_before setting.
+ * Determine if an overdue notice should be sent today.
+ * Rules:
+ *   - daysOverdue must exceed gracePeriodDays
+ *   - daysOverdue after grace must be divisible by overdueRepeatEvery
  */
-async function processDueReminders(appUrl: string): Promise<void> {
-  const allSchools = await db.select().from(schools);
+function shouldSendOverdue(
+  daysOverdue: number,
+  gracePeriodDays: number,
+  overdueRepeatEvery: number
+): boolean {
+  if (daysOverdue <= gracePeriodDays) return false;
+  const daysAfterGrace = daysOverdue - gracePeriodDays;
+  return daysAfterGrace % overdueRepeatEvery === 0;
+}
 
-  for (const school of allSchools) {
-    const reminderDays = getReminderDays(school.settings);
-    for (const n of reminderDays) {
-      await sendRemindersForDayOffset(school.id, n, appUrl);
-    }
+/**
+ * Send due reminders for a school using its configured reminderDaysBefore array.
+ */
+async function sendRemindersForSchool(
+  schoolId: string,
+  reminderDaysBefore: number[],
+  appUrl: string
+): Promise<void> {
+  for (const n of reminderDaysBefore) {
+    await sendRemindersForDayOffset(schoolId, n, appUrl);
   }
 }
 
@@ -119,13 +193,6 @@ async function getFcmTokens(userId: string): Promise<string[]> {
     .from(pushSubscriptions)
     .where(eq(pushSubscriptions.userId, userId));
   return rows.map((r) => r.fcmToken);
-}
-
-/** Extract reminder_days_before from school settings, defaulting to [3, 1]. */
-function getReminderDays(settings: Record<string, unknown> | null): number[] {
-  const val = settings?.reminder_days_before;
-  if (Array.isArray(val) && val.every((v) => typeof v === 'number')) return val;
-  return [3, 1];
 }
 
 /** Send due reminders for checkouts due exactly N days from today. */

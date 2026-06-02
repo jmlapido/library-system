@@ -19,6 +19,12 @@ interface SchoolSettings {
   maxFineAmount: number;
   overdueReminderDays: number;
   timezone: string;
+  // Notification settings
+  reminderDaysBefore: number[];
+  overdueRepeatEvery: number;
+  notificationTime: string;
+  smsSenderId: string;
+  // SSO
   ssoGoogleEnabled: boolean;
   ssoGoogleClientId: string;
   ssoGoogleClientSecret: string;
@@ -62,6 +68,10 @@ const DEFAULTS: FormValues = {
   maxFineAmount: 0,
   overdueReminderDays: 2,
   timezone: 'Asia/Manila',
+  reminderDaysBefore: [3, 1],
+  overdueRepeatEvery: 2,
+  notificationTime: '08:00',
+  smsSenderId: 'LIBRARY',
   ssoGoogleEnabled: false,
   ssoGoogleClientId: '',
   ssoGoogleClientSecret: '',
@@ -258,6 +268,61 @@ export function SchoolSettingsPage() {
               />
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Notification Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Notification Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-1">
+            <Label htmlFor="reminder-days-before">Reminder Days Before Due</Label>
+            <Input
+              id="reminder-days-before"
+              placeholder="3, 1"
+              value={form.reminderDaysBefore.join(', ')}
+              onChange={(e) => {
+                const parsed = e.target.value
+                  .split(',')
+                  .map((s) => parseInt(s.trim(), 10))
+                  .filter((n) => !isNaN(n) && n > 0);
+                set('reminderDaysBefore', parsed.length > 0 ? parsed : [3, 1]);
+              }}
+            />
+            <p className="text-xs text-muted-foreground">Comma-separated days before due date (e.g. 3, 1)</p>
+          </div>
+          <NumField
+            label="Repeat overdue notice every X days"
+            id="overdue-repeat"
+            value={form.overdueRepeatEvery}
+            onChange={(v) => set('overdueRepeatEvery', v)}
+            min={1}
+            max={30}
+          />
+          <div className="space-y-1">
+            <Label htmlFor="notification-time">Daily send time (school local time)</Label>
+            <input
+              id="notification-time"
+              type="time"
+              value={form.notificationTime}
+              onChange={(e) => set('notificationTime', e.target.value)}
+              className="flex h-9 w-40 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="sms-sender-id">SMS Sender Name</Label>
+            <Input
+              id="sms-sender-id"
+              maxLength={11}
+              placeholder="LIBRARY"
+              value={form.smsSenderId}
+              onChange={(e) => set('smsSenderId', e.target.value)}
+              className="w-40"
+            />
+            <p className="text-xs text-muted-foreground">Max 11 characters (Twilio alphanumeric sender ID)</p>
+          </div>
         </CardContent>
       </Card>
 

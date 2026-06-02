@@ -17,6 +17,11 @@ export const SchoolSettingsSchema = z.object({
   maxFineAmount: z.coerce.number().min(0).max(100000).default(0),
   overdueReminderDays: z.coerce.number().int().min(0).max(30).default(2),
   timezone: z.string().min(1).max(100).default('Asia/Manila'),
+  // Notification scheduling
+  reminderDaysBefore: z.array(z.coerce.number().int().min(1).max(365)).default([3, 1]),
+  overdueRepeatEvery: z.coerce.number().int().min(1).max(30).default(2),
+  notificationTime: z.string().regex(/^\d{2}:\d{2}$/).default('08:00'),
+  smsSenderId: z.string().max(11).default('LIBRARY'),
   // OAuth SSO
   ssoGoogleEnabled: z.boolean().default(false),
   ssoGoogleClientId: z.string().max(255).default(''),

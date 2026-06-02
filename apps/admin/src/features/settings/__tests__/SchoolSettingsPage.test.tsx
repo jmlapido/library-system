@@ -20,6 +20,10 @@ const mockData = {
     studentCheckoutDays: 14, teacherCheckoutDays: 28,
     studentCheckoutLimit: 5, teacherCheckoutLimit: 15,
     fineEnabled: false, finePerDay: 0, overdueReminderDays: 2, timezone: 'Asia/Manila',
+    reminderDaysBefore: [3, 1],
+    overdueRepeatEvery: 2,
+    notificationTime: '08:00',
+    smsSenderId: 'LIBRARY',
   },
 };
 
@@ -93,5 +97,38 @@ describe('SchoolSettingsPage', () => {
     mockGet.mockRejectedValue(new Error('Network error'));
     render(<SchoolSettingsPage />, { wrapper: wrapper() });
     await waitFor(() => expect(screen.getByText('Failed to load school settings.')).toBeInTheDocument());
+  });
+
+  it('renders Notification Settings section with correct fields', async () => {
+    mockGet.mockResolvedValue(mockData);
+    render(<SchoolSettingsPage />, { wrapper: wrapper() });
+    await waitFor(() => screen.getByText('Notification Settings'));
+    expect(screen.getByLabelText('Reminder Days Before Due')).toBeInTheDocument();
+    expect(screen.getByLabelText('Repeat overdue notice every X days')).toBeInTheDocument();
+    expect(screen.getByLabelText('Daily send time (school local time)')).toBeInTheDocument();
+    expect(screen.getByLabelText('SMS Sender Name')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('3, 1')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('08:00')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('LIBRARY')).toBeInTheDocument();
+  });
+
+  it('calls PATCH with notification fields in payload', async () => {
+    mockGet.mockResolvedValue(mockData);
+    mockPatch.mockResolvedValue(mockData.settings);
+    render(<SchoolSettingsPage />, { wrapper: wrapper() });
+    await waitFor(() => screen.getByLabelText('SMS Sender Name'));
+    fireEvent.change(screen.getByLabelText('SMS Sender Name'), { target: { value: 'COOLSCHOOL' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Settings' }));
+    await waitFor(() =>
+      expect(mockPatch).toHaveBeenCalledWith(
+        '/schools/settings',
+        expect.objectContaining({
+          smsSenderId: 'COOLSCHOOL',
+          reminderDaysBefore: [3, 1],
+          overdueRepeatEvery: 2,
+          notificationTime: '08:00',
+        })
+      )
+    );
   });
 });
