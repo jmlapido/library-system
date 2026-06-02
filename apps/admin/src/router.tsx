@@ -7,6 +7,7 @@ import { CirculationPage } from './features/circulation/CirculationPage';
 import { ReportsPage } from './features/reports/ReportsPage';
 import { BulkImportPage } from './features/bulk-import/BulkImportPage';
 import { SchoolSettingsPage } from './features/settings/SchoolSettingsPage';
+import { WebhooksPage } from './features/webhooks/WebhooksPage';
 import { OAuthCallbackPage } from './features/auth/OAuthCallbackPage';
 import { useAuthStore } from './stores/auth';
 
@@ -89,6 +90,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['admin']}>
             <SchoolSettingsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/webhooks',
+        element: (
+          <ProtectedRoute roles={['admin']}>
+            <WebhooksPage />
           </ProtectedRoute>
         ),
       },
