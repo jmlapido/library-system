@@ -12,6 +12,7 @@ import { WebhooksPage } from './features/webhooks/WebhooksPage';
 import { OAuthCallbackPage } from './features/auth/OAuthCallbackPage';
 import { SchoolsManagementPage } from './features/schools/SchoolsManagementPage';
 import { CatalogPage } from './features/catalog/CatalogPage';
+import { StudentsPage } from './features/students/StudentsPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -84,7 +85,7 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         path: '/students',
         element: (
           <ProtectedRoute roles={['librarian', 'admin']} permission="students.view">
-            <div className="p-6 text-muted-foreground">Students — coming in Task 34</div>
+            <StudentsPage />
           </ProtectedRoute>
         ),
       },
