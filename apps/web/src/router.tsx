@@ -12,6 +12,13 @@ import { ReadingListDetailPage } from './pages/ReadingListDetailPage';
 import { BookClubsPage } from './pages/BookClubsPage';
 import { BookClubDetailPage } from './pages/BookClubDetailPage';
 import { AchievementsPage } from './pages/AchievementsPage';
+import { KioskShell } from './kiosk/KioskShell';
+import { AttractScreen } from './kiosk/AttractScreen';
+import { KioskGuestHome } from './kiosk/KioskGuestHome';
+import { KioskSearchPage } from './kiosk/KioskSearchPage';
+import { KioskBookDetail } from './kiosk/KioskBookDetail';
+import { KioskLoginPage } from './kiosk/KioskLoginPage';
+import { KioskCheckoutFlow } from './kiosk/KioskCheckoutFlow';
 
 /** Authenticated layout wrapper: gradient background + fixed bottom nav. */
 function AppShell() {
@@ -32,6 +39,22 @@ function AppShell() {
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+
+  // ---------- Kiosk route tree (no auth required) ----------
+  {
+    path: '/kiosk',
+    element: <KioskShell />,
+    children: [
+      { index: true, element: <AttractScreen /> },
+      { path: 'home', element: <KioskGuestHome /> },
+      { path: 'search', element: <KioskSearchPage /> },
+      { path: 'book/:id', element: <KioskBookDetail /> },
+      { path: 'login', element: <KioskLoginPage /> },
+      { path: 'checkout', element: <KioskCheckoutFlow /> },
+    ],
+  },
+
+  // ---------- Student portal (auth required) ----------
   {
     element: <ProtectedRoute />,
     children: [
