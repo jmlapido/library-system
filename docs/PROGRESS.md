@@ -1,9 +1,9 @@
 # LibraMS — Development Progress Tracker
 
 > Last updated: 2026-06-02
-> Branch: `master` | Tests: 469 passing | Typecheck: clean
-> Last commit: `0f1efb6` — PROGRESS.md updated, all 4 phases complete
-> Next: Phase 5 (Tasks 62–70) — Admin UI completion & operations
+> Branch: `master` | Tests: 500+ passing
+> Last commit: `48e8c29` — Phase 5 complete (Tasks 62–70)
+> Next: Phase 6 (Tasks 71–80) — Kiosk UI, teacher features, S3, i18n
 
 ---
 
@@ -208,7 +208,7 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 ---
 
-## Phase 5 — Admin Completion & Operations ⬜ PENDING
+## Phase 5 — Admin Completion & Operations ✅ COMPLETE (2026-06-02)
 
 Goal: Fill placeholder admin pages, add fine management, notification config, hold expiry, inventory tools.
 
@@ -216,24 +216,24 @@ Goal: Fill placeholder admin pages, add fine management, notification config, ho
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 62 | Admin Dashboard home | Overview metrics: checkouts today, overdue count, holds queue, active users, recent activity | ⬜ |
-| 63 | Catalog management UI | Book list (TanStack Table), add/edit dialog with ISBN auto-fill + AI metadata assist, copy management | ⬜ |
-| 64 | Students management UI | Student roster list, search by name/ID, view profile + checkout history, reset PIN | ⬜ |
-| 65 | Shelving queue UI | Dedicated page: returned → being_processed → shelved; scan/tap to advance stage; timestamps | ⬜ |
-| 66 | Audit log UI | Paginated table of admin actions — actor, action, affected record, timestamp; filter by action type | ⬜ |
+| 62 | Admin Dashboard home | Overview metrics: checkouts today, overdue count, holds queue, active users, recent activity | ✅ `1c438c5` |
+| 63 | Catalog management UI | Book list (TanStack Table), add/edit dialog with ISBN auto-fill + AI metadata assist, copy management | ✅ `d203001` |
+| 64 | Students management UI | Student roster list, search by name/ID, view profile + checkout history, reset PIN | ✅ `9070c81` |
+| 65 | Shelving queue UI | Dedicated page: returned → being_processed → shelved; scan/tap to advance stage; timestamps | ✅ `aed0932` |
+| 66 | Audit log UI | Paginated table of admin actions — actor, action, affected record, timestamp; filter by action type | ✅ `7603d54` |
 
 ### Group U: Operations & Configuration
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 67 | Fine management | `fine_per_day` + `grace_period_days` in school settings schema; admin fines list; waive + mark-paid endpoints | ⬜ |
-| 68 | Notification settings | `reminder_days_before`, `overdue_repeat_every`, `notification_time`, `sms_sender_id` in school settings; scheduler reads from DB | ⬜ |
-| 69 | Hold expiry | `hold_expiry_days` school setting; BullMQ daily job auto-expires holds; admin manual override endpoint | ⬜ |
-| 70 | Inventory tools | Shelf audit (scan barcodes vs expected); missing books report; condition update per copy | ⬜ |
+| 67 | Fine management | `fine_per_day` + `grace_period_days` in school settings schema; admin fines list; waive + mark-paid endpoints | ✅ `07f3a75` |
+| 68 | Notification settings | `reminder_days_before`, `overdue_repeat_every`, `notification_time`, `sms_sender_id` in school settings; scheduler reads from DB | ✅ `9b7a09f` |
+| 69 | Hold expiry | `hold_expiry_days` school setting; BullMQ daily job auto-expires holds; admin manual override endpoint | ✅ `0a9a4a0` |
+| 70 | Inventory tools | Shelf audit (scan barcodes vs expected); missing books report; condition update per copy | ✅ `48e8c29` |
 
 ---
 
-## Phase 6 — Kiosk UI, Teacher Features & Polish ⬜ PENDING
+## Phase 6 — Kiosk UI, Teacher Features & Polish ⬜ PENDING (start in new session)
 
 Goal: Build the kiosk surface (spec'd in detail), add school year/class section teacher workflow, S3 file storage, i18n.
 
@@ -268,9 +268,9 @@ Goal: Build the kiosk surface (spec'd in detail), add school year/class section 
 
 | Metric | Count |
 |--------|-------|
-| Phases complete | **4 / 6** |
-| Tasks complete | **61** |
-| Tasks remaining | **19 (Tasks 62–80)** |
+| Phases complete | **5 / 6** |
+| Tasks complete | **70** |
+| Tasks remaining | **10 (Tasks 71–80)** |
 | API test files | 32 |
 | API tests passing | **328** |
 | Admin tests passing | **92** |
