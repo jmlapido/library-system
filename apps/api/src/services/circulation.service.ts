@@ -6,6 +6,7 @@ import { AppError } from '../utils/errors.js';
 import { refreshBookIndex } from './catalog.service.js';
 import { checkAndAwardBadges } from './badges.service.js';
 import { updateChallengeProgressOnCheckout } from './challenges.service.js';
+import { getSchoolSettings } from './school.service.js';
 import type { AccessTokenPayload } from '../lib/jwt.js';
 import type { CheckoutInput, ReturnInput, AdvanceStageInput, RenewInput, PlaceHoldInput } from 'shared';
 
@@ -73,7 +74,25 @@ export async function checkout(input: CheckoutInput, requestor: AccessTokenPaylo
 }
 
 /**
- * Initiate return: copy moves to 'returned' (stage 1 of 3). Calculates late fee.
+ * Calculate fine amount based on school settings.
+ */
+function calcFine(
+  dueDate: Date,
+  returnDate: Date,
+  finePerDay: number,
+  gracePeriodDays: number,
+  maxFineAmount: number,
+): string {
+  if (returnDate <= dueDate) return '0';
+  const rawDays = Math.ceil((returnDate.getTime() - dueDate.getTime()) / 86_400_000);
+  const billableDays = Math.max(0, rawDays - gracePeriodDays);
+  const amount = billableDays * finePerDay;
+  const capped = maxFineAmount > 0 ? Math.min(amount, maxFineAmount) : amount;
+  return capped.toFixed(2);
+}
+
+/**
+ * Initiate return: copy moves to 'returned' (stage 1 of 3). Calculates fine using school settings.
  */
 export async function returnBook(input: ReturnInput, schoolId: string) {
   const copy = await findCopy(input.barcode, input.inventoryId, schoolId);
@@ -86,18 +105,22 @@ export async function returnBook(input: ReturnInput, schoolId: string) {
   if (!activeCheckout) throw new AppError('CHECKOUT_NOT_FOUND', 'No active checkout found for this copy');
 
   const now = new Date();
-  const lateFee = now > activeCheckout.dueDate
-    ? (Math.ceil((now.getTime() - activeCheckout.dueDate.getTime()) / 86_400_000) * 0.25).toFixed(2)
-    : null;
+  const { settings } = await getSchoolSettings(schoolId);
+  const fineAmount = calcFine(
+    activeCheckout.dueDate, now,
+    settings.fineEnabled ? settings.finePerDay : 0,
+    settings.gracePeriodDays,
+    settings.maxFineAmount,
+  );
 
   const updated = (await db.update(checkouts)
-    .set({ status: 'returned', returnDate: now, lateFee: lateFee ?? undefined, updatedAt: now } as Parameters<typeof db.update<typeof checkouts>>[0] extends never ? never : object)
+    .set({ status: 'returned', returnDate: now, lateFee: fineAmount, fineAmount, updatedAt: now } as Parameters<typeof db.update<typeof checkouts>>[0] extends never ? never : object)
     .where(eq(checkouts.id, activeCheckout.id))
     .returning())[0]!;
 
   await db.update(bookInventory).set({ status: 'returned', updatedAt: now }).where(eq(bookInventory.id, copy.id));
   await refreshBookIndex(copy.bookId);
-  return { checkout: updated, lateFee };
+  return { checkout: updated, fineAmount };
 }
 
 /**

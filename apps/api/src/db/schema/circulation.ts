@@ -20,6 +20,11 @@ export const checkouts = pgTable('checkouts', {
   renewalCount: integer('renewal_count').default(0).notNull(),
   status: checkoutStatusEnum('status').notNull().default('checked_out'),
   lateFee: numeric('late_fee', { precision: 10, scale: 2 }),
+  fineAmount: numeric('fine_amount', { precision: 10, scale: 2 }).default('0'),
+  finePaid: boolean('fine_paid').default(false),
+  fineWaived: boolean('fine_waived').default(false),
+  fineWaivedBy: uuid('fine_waived_by').references(() => users.id),
+  fineWaivedAt: timestamp('fine_waived_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   index('checkouts_user_id_idx').on(table.userId),

@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { label: 'Students', to: '/students', roles: ['librarian', 'admin'], permission: 'students.view' },
   { label: 'Bulk Import', to: '/bulk-import', roles: ['librarian', 'admin'] },
   { label: 'Reports', to: '/reports', roles: ['librarian', 'admin'] },
+  { label: 'Fines', to: '/fines', roles: ['librarian', 'admin'] },
   { label: 'Settings', to: '/settings', roles: ['admin'] },
   { label: 'Webhooks', to: '/webhooks', roles: ['admin'] },
   { label: 'Audit Log', to: '/audit-log', roles: ['admin'] },

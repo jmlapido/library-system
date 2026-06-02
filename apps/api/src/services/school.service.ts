@@ -13,6 +13,8 @@ export const SchoolSettingsSchema = z.object({
   teacherCheckoutLimit: z.coerce.number().int().min(1).max(100).default(15),
   fineEnabled: z.boolean().default(false),
   finePerDay: z.coerce.number().min(0).max(1000).default(0),
+  gracePeriodDays: z.coerce.number().int().min(0).max(30).default(0),
+  maxFineAmount: z.coerce.number().min(0).max(100000).default(0),
   overdueReminderDays: z.coerce.number().int().min(0).max(30).default(2),
   timezone: z.string().min(1).max(100).default('Asia/Manila'),
   // OAuth SSO

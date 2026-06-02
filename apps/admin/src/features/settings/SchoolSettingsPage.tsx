@@ -15,6 +15,8 @@ interface SchoolSettings {
   teacherCheckoutLimit: number;
   fineEnabled: boolean;
   finePerDay: number;
+  gracePeriodDays: number;
+  maxFineAmount: number;
   overdueReminderDays: number;
   timezone: string;
   ssoGoogleEnabled: boolean;
@@ -56,6 +58,8 @@ const DEFAULTS: FormValues = {
   teacherCheckoutLimit: 15,
   fineEnabled: false,
   finePerDay: 0,
+  gracePeriodDays: 0,
+  maxFineAmount: 0,
   overdueReminderDays: 2,
   timezone: 'Asia/Manila',
   ssoGoogleEnabled: false,
@@ -227,7 +231,32 @@ export function SchoolSettingsPage() {
             <Label htmlFor="fine-enabled">Enable overdue fines</Label>
           </div>
           {form.fineEnabled && (
-            <NumField label="Fine per day (₱)" id="fine-day" value={form.finePerDay} onChange={(v) => set('finePerDay', v)} min={0} max={1000} />
+            <div className="grid grid-cols-2 gap-4">
+              <NumField
+                label="Fine per day (₱)"
+                id="fine-day"
+                value={form.finePerDay}
+                onChange={(v) => set('finePerDay', v)}
+                min={0}
+                max={1000}
+              />
+              <NumField
+                label="Grace period (days)"
+                id="fine-grace"
+                value={form.gracePeriodDays}
+                onChange={(v) => set('gracePeriodDays', v)}
+                min={0}
+                max={30}
+              />
+              <NumField
+                label="Max fine per item (₱, 0 = no cap)"
+                id="fine-max"
+                value={form.maxFineAmount}
+                onChange={(v) => set('maxFineAmount', v)}
+                min={0}
+                max={100000}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
