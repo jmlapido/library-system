@@ -5,6 +5,7 @@ import { LoginPage } from './features/auth/LoginPage';
 import { StaffManagementPage } from './features/staff-management/StaffManagementPage';
 import { CirculationPage } from './features/circulation/CirculationPage';
 import { ReportsPage } from './features/reports/ReportsPage';
+import { BulkImportPage } from './features/bulk-import/BulkImportPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -69,6 +70,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['librarian', 'admin']} permission="students.view">
             <div className="p-6 text-muted-foreground">Students — coming in Task 34</div>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/bulk-import',
+        element: (
+          <ProtectedRoute roles={['librarian', 'admin']}>
+            <BulkImportPage />
           </ProtectedRoute>
         ),
       },

@@ -85,6 +85,36 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
   return json.data as T;
 }
 
+/**
+ * POST /api/v1/{path} with multipart FormData (file upload).
+ * Does NOT set Content-Type — browser sets it with the correct boundary.
+ */
+async function uploadFile<T>(path: string, formData: FormData, retry = true): Promise<T> {
+  const { accessToken } = useAuthStore.getState();
+  const headers: Record<string, string> = {};
+  if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+
+  const res = await fetch(`${BASE}${path}`, { method: 'POST', body: formData, headers });
+
+  if (res.status === 401 && retry) {
+    const newToken = await refreshAccessToken();
+    headers['Authorization'] = `Bearer ${newToken}`;
+    return uploadFile<T>(path, formData, false);
+  }
+
+  const json = (await res.json()) as {
+    success: boolean;
+    data?: T;
+    error?: string;
+    code?: string;
+  };
+
+  if (!res.ok || !json.success) {
+    throw new ApiError(res.status, json.code ?? 'UNKNOWN', json.error ?? 'Request failed');
+  }
+  return json.data as T;
+}
+
 /** Typed HTTP helpers for all admin API calls. */
 export const api = {
   /** GET /api/v1/{path} */
@@ -97,4 +127,6 @@ export const api = {
     request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
   /** DELETE /api/v1/{path} */
   delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+  /** POST /api/v1/{path} with multipart FormData */
+  upload: <T>(path: string, formData: FormData) => uploadFile<T>(path, formData),
 };
