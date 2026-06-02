@@ -16,6 +16,7 @@ import { badgesRouter } from './routes/badges.js';
 import { challengesRouter } from './routes/challenges.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { importRouter } from './routes/import.js';
+import { schoolsRouter } from './routes/schools.js';
 
 export const app = new Hono();
 
@@ -52,6 +53,7 @@ app.route('/api/v1/badges', badgesRouter);
 app.route('/api/v1/challenges', challengesRouter);
 app.route('/api/v1', analyticsRouter);
 app.route('/api/v1', importRouter);
+app.route('/api/v1', schoolsRouter);
 
 app.notFound((c) => c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404));
 

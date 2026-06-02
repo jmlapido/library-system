@@ -6,6 +6,7 @@ import { StaffManagementPage } from './features/staff-management/StaffManagement
 import { CirculationPage } from './features/circulation/CirculationPage';
 import { ReportsPage } from './features/reports/ReportsPage';
 import { BulkImportPage } from './features/bulk-import/BulkImportPage';
+import { SchoolSettingsPage } from './features/settings/SchoolSettingsPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -78,6 +79,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['librarian', 'admin']}>
             <BulkImportPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/settings',
+        element: (
+          <ProtectedRoute roles={['admin']}>
+            <SchoolSettingsPage />
           </ProtectedRoute>
         ),
       },
