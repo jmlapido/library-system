@@ -13,6 +13,7 @@ import { OAuthCallbackPage } from './features/auth/OAuthCallbackPage';
 import { SchoolsManagementPage } from './features/schools/SchoolsManagementPage';
 import { CatalogPage } from './features/catalog/CatalogPage';
 import { StudentsPage } from './features/students/StudentsPage';
+import { ShelvingQueuePage } from './features/shelving/ShelvingQueuePage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -72,7 +73,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
           </ProtectedRoute>
         ),
       },
-      { path: '/shelving-queue', element: <div className="p-6 text-muted-foreground">Shelving Queue — coming in Task 32</div> },
+      {
+        path: '/shelving-queue',
+        element: (
+          <ProtectedRoute roles={['librarian', 'library_assistant', 'admin']}>
+            <ShelvingQueuePage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: '/catalog',
         element: (
