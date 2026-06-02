@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "ldapjs": "^3.0.7",
     "meilisearch": "^0.44.0",
+    "openai": "^6.41.0",
     "pdfkit": "^0.15.0",
     "postgres": "^3.4.5",
     "prom-client": "^15.1.3",
