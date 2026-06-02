@@ -14,6 +14,7 @@ import { SchoolsManagementPage } from './features/schools/SchoolsManagementPage'
 import { CatalogPage } from './features/catalog/CatalogPage';
 import { StudentsPage } from './features/students/StudentsPage';
 import { ShelvingQueuePage } from './features/shelving/ShelvingQueuePage';
+import { AuditLogPage } from './features/audit-log/AuditLogPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -61,7 +62,7 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         path: '/audit-log',
         element: (
           <ProtectedRoute roles={['admin']}>
-            <div className="p-6 text-muted-foreground">Audit Log — coming in Task 35</div>
+            <AuditLogPage />
           </ProtectedRoute>
         ),
       },
