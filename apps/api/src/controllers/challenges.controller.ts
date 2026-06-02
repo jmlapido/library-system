@@ -54,7 +54,7 @@ export async function listChallengesController(c: Context<{ Variables: Variables
   const query = ChallengeFiltersSchema.safeParse(c.req.query());
   const status = query.success ? query.data.status : undefined;
   try {
-    const data = await challengesService.listChallenges(user.schoolId, status);
+    const data = await challengesService.listChallenges(user.schoolId!, status);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -70,7 +70,7 @@ export async function getChallengeController(c: Context<{ Variables: Variables }
   const user = c.get('user');
   const challengeId = c.req.param('id') ?? '';
   try {
-    const data = await challengesService.getChallenge(challengeId, user.schoolId);
+    const data = await challengesService.getChallenge(challengeId, user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -89,7 +89,7 @@ export async function createChallengeController(c: Context<{ Variables: Variable
   try {
     const data = await challengesService.createChallenge(
       {
-        schoolId: user.schoolId,
+        schoolId: user.schoolId!,
         title: body.title,
         goal: body.goal,
         goalType: body.goalType,
@@ -116,7 +116,7 @@ export async function updateChallengeStatusController(c: Context<{ Variables: Va
   const body = await parseBody(c, UpdateStatusSchema);
   if (body instanceof Response) return body;
   try {
-    const data = await challengesService.updateChallengeStatus(challengeId, user.schoolId, body.status);
+    const data = await challengesService.updateChallengeStatus(challengeId, user.schoolId!, body.status);
     return c.json({ success: true, data, message: 'Status updated' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -132,7 +132,7 @@ export async function deleteChallengeController(c: Context<{ Variables: Variable
   const user = c.get('user');
   const challengeId = c.req.param('id') ?? '';
   try {
-    await challengesService.deleteChallenge(challengeId, user.schoolId);
+    await challengesService.deleteChallenge(challengeId, user.schoolId!);
     return c.json({ success: true, message: 'Challenge deleted' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -148,7 +148,7 @@ export async function enrollController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   const challengeId = c.req.param('id') ?? '';
   try {
-    const data = await challengesService.enrollInChallenge(challengeId, user.sub, user.schoolId);
+    const data = await challengesService.enrollInChallenge(challengeId, user.sub, user.schoolId!);
     return c.json({ success: true, data, message: 'Enrolled in challenge' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -163,7 +163,7 @@ export async function enrollController(c: Context<{ Variables: Variables }>) {
 export async function getMyEnrollmentsController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await challengesService.getMyEnrollments(user.sub, user.schoolId);
+    const data = await challengesService.getMyEnrollments(user.sub, user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -179,7 +179,7 @@ export async function leaderboardController(c: Context<{ Variables: Variables }>
   const user = c.get('user');
   const challengeId = c.req.param('id') ?? '';
   try {
-    const data = await challengesService.getChallengeLeaderboard(challengeId, user.schoolId);
+    const data = await challengesService.getChallengeLeaderboard(challengeId, user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));

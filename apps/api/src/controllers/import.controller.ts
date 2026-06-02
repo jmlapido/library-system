@@ -63,7 +63,7 @@ export async function importStudentsController(c: Context<{ Variables: Variables
   if (fileOrError instanceof Response) return fileOrError;
 
   try {
-    const result = await importStudents(fileOrError, user.schoolId);
+    const result = await importStudents(fileOrError, user.schoolId!);
     return c.json({ success: true, data: result });
   } catch (err) {
     if (err instanceof AppError) {
@@ -84,7 +84,7 @@ export async function importBooksController(c: Context<{ Variables: Variables }>
   if (fileOrError instanceof Response) return fileOrError;
 
   try {
-    const result = await importBooks(fileOrError, user.schoolId);
+    const result = await importBooks(fileOrError, user.schoolId!);
     return c.json({ success: true, data: result });
   } catch (err) {
     if (err instanceof AppError) {
@@ -106,7 +106,7 @@ export async function importMarcController(c: Context<{ Variables: Variables }>)
   if (bufOrError instanceof Response) return bufOrError;
 
   try {
-    const result = await importMarc(bufOrError, user.schoolId);
+    const result = await importMarc(bufOrError, user.schoolId!);
     return c.json({ success: true, data: result });
   } catch (err) {
     if (err instanceof AppError) {

@@ -5,7 +5,7 @@ import type { UserRole } from 'shared';
 export interface AccessTokenPayload {
   sub: string;
   role: UserRole;
-  schoolId: string;
+  schoolId: string | null;
 }
 
 const ACCESS_SECRET: string = (() => {

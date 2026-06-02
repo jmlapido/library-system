@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { label: 'Settings', to: '/settings', roles: ['admin'] },
   { label: 'Webhooks', to: '/webhooks', roles: ['admin'] },
   { label: 'Audit Log', to: '/audit-log', roles: ['admin'] },
+  { label: 'Schools', to: '/schools', roles: ['super_admin'] },
 ] as const;
 
 export function AppShell() {

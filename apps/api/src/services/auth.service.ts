@@ -34,12 +34,14 @@ export async function login(input: LoginInput) {
   if (!user.isActive) throw new AppError('ACCOUNT_INACTIVE', 'Account is inactive');
 
   if (isEmail) {
-    // Check school LDAP settings for staff email logins
-    const [school] = await db
-      .select({ settings: schools.settings })
-      .from(schools)
-      .where(eq(schools.id, user.schoolId))
-      .limit(1);
+    // Check school LDAP settings for staff email logins (super_admin has no school)
+    const [school] = user.schoolId
+      ? await db
+          .select({ settings: schools.settings })
+          .from(schools)
+          .where(eq(schools.id, user.schoolId))
+          .limit(1)
+      : [];
 
     const settings = SchoolSettingsSchema.safeParse({
       ...DEFAULT_SETTINGS,
@@ -73,7 +75,7 @@ export async function login(input: LoginInput) {
     if (!valid) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
   }
 
-  const accessToken = signAccessToken({ sub: user.id, role: user.role, schoolId: user.schoolId });
+  const accessToken = signAccessToken({ sub: user.id, role: user.role, schoolId: user.schoolId ?? null });
   const rawRefreshToken = signRefreshToken();
   const tokenHash = await bcrypt.hash(rawRefreshToken, 10);
 
@@ -123,7 +125,7 @@ export async function refreshSession(rawToken: string) {
   const [user] = await db.select().from(users).where(eq(users.id, matched.userId)).limit(1);
   if (!user || !user.isActive) throw new AppError('ACCOUNT_INACTIVE', 'Account is inactive');
 
-  const newAccessToken = signAccessToken({ sub: user.id, role: user.role, schoolId: user.schoolId });
+  const newAccessToken = signAccessToken({ sub: user.id, role: user.role, schoolId: user.schoolId ?? null });
   const newRawToken = signRefreshToken();
 
   await db.insert(refreshTokens).values({

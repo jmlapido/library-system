@@ -5,8 +5,8 @@ import { persist } from 'zustand/middleware';
 export interface AdminUser {
   id: string;
   fullName: string;
-  role: 'librarian' | 'library_assistant' | 'admin';
-  schoolId: string;
+  role: 'librarian' | 'library_assistant' | 'admin' | 'super_admin';
+  schoolId: string | null;
   effectivePermissions: string[];
 }
 

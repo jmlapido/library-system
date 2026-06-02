@@ -15,7 +15,7 @@ const requireStaff = [requireAuth, requireRole('librarian', 'library_assistant',
 
 printingRouter.get('/print/label/:copy_id', ...requireStaff, async (c) => {
   const { schoolId } = c.get('user');
-  const pdf = await getSpineLabelPdf(c.req.param('copy_id'), schoolId);
+  const pdf = await getSpineLabelPdf(c.req.param('copy_id'), schoolId!);
   return new Response(pdf, {
     headers: {
       'Content-Type': 'application/pdf',
@@ -26,7 +26,7 @@ printingRouter.get('/print/label/:copy_id', ...requireStaff, async (c) => {
 
 printingRouter.get('/print/card/:copy_id', ...requireStaff, async (c) => {
   const { schoolId } = c.get('user');
-  const pdf = await getMetadataCardPdf(c.req.param('copy_id'), schoolId);
+  const pdf = await getMetadataCardPdf(c.req.param('copy_id'), schoolId!);
   return new Response(pdf, {
     headers: {
       'Content-Type': 'application/pdf',
@@ -37,7 +37,7 @@ printingRouter.get('/print/card/:copy_id', ...requireStaff, async (c) => {
 
 printingRouter.get('/print/label/:copy_id/zpl', ...requireStaff, async (c) => {
   const { schoolId } = c.get('user');
-  const zpl = await getSpineZpl(c.req.param('copy_id'), schoolId);
+  const zpl = await getSpineZpl(c.req.param('copy_id'), schoolId!);
   c.header('Content-Type', 'text/plain');
   return c.text(zpl);
 });
@@ -57,7 +57,7 @@ printingRouter.get('/print/bulk-labels', ...requireStaff, async (c) => {
     return c.json({ success: false, error: 'Maximum 50 copies per batch', code: 'VALIDATION_ERROR' }, 400);
   }
 
-  const pdf = await getBulkLabelsPdf(ids, schoolId);
+  const pdf = await getBulkLabelsPdf(ids, schoolId!);
   return new Response(pdf, {
     headers: {
       'Content-Type': 'application/pdf',
@@ -69,7 +69,7 @@ printingRouter.get('/print/bulk-labels', ...requireStaff, async (c) => {
 printingRouter.get('/copies/barcode/:barcode', ...requireStaff, async (c) => {
   const { schoolId } = c.get('user');
   try {
-    const result = await getCopyByBarcode(c.req.param('barcode'), schoolId);
+    const result = await getCopyByBarcode(c.req.param('barcode'), schoolId!);
     return c.json({ success: true, data: result });
   } catch (err) {
     if (err instanceof AppError && err.code === 'NOT_FOUND') {

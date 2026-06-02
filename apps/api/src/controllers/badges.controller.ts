@@ -46,7 +46,7 @@ function errorStatus(code: string): 400 | 403 | 404 | 409 {
 export async function listBadgesController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await badgesService.listBadges(user.schoolId);
+    const data = await badgesService.listBadges(user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -61,7 +61,7 @@ export async function listBadgesController(c: Context<{ Variables: Variables }>)
 export async function getMyBadgesController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await badgesService.getMyBadges(user.sub, user.schoolId);
+    const data = await badgesService.getMyBadges(user.sub, user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -79,7 +79,7 @@ export async function createBadgeController(c: Context<{ Variables: Variables }>
   if (body instanceof Response) return body;
   try {
     const badge = await badgesService.createBadge({
-      schoolId: user.schoolId,
+      schoolId: user.schoolId!,
       name: body.name,
       ...(body.description !== undefined && { description: body.description }),
       ...(body.iconUrl !== undefined && { iconUrl: body.iconUrl }),
@@ -100,7 +100,7 @@ export async function deleteBadgeController(c: Context<{ Variables: Variables }>
   const user = c.get('user');
   const badgeId = c.req.param('id') ?? '';
   try {
-    await badgesService.deleteBadge(badgeId, user.schoolId);
+    await badgesService.deleteBadge(badgeId, user.schoolId!);
     return c.json({ success: true, message: 'Badge deleted' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -115,7 +115,7 @@ export async function deleteBadgeController(c: Context<{ Variables: Variables }>
 export async function seedDefaultBadgesController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const created = await badgesService.seedDefaultBadges(user.schoolId);
+    const created = await badgesService.seedDefaultBadges(user.schoolId!);
     return c.json({ success: true, data: created, message: `Seeded ${created.length} default badges` });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -132,7 +132,7 @@ export async function checkAndAwardController(c: Context<{ Variables: Variables 
   const body = await parseBody(c, CheckAndAwardSchema);
   if (body instanceof Response) return body;
   try {
-    const awarded = await badgesService.checkAndAwardBadges(body.userId, user.schoolId);
+    const awarded = await badgesService.checkAndAwardBadges(body.userId, user.schoolId!);
     return c.json({ success: true, data: awarded, message: `Awarded ${awarded.length} new badge(s)` });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));

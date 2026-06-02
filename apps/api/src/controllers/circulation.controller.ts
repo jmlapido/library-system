@@ -45,7 +45,7 @@ export async function returnController(c: Context) {
   if (!parsed.success) return c.json({ success: false, error: parsed.error.message, code: 'VALIDATION_ERROR' }, 422);
   const user = c.get('user') as AccessTokenPayload;
   try {
-    const result = await returnBook(parsed.data, user.schoolId);
+    const result = await returnBook(parsed.data, user.schoolId!);
     return c.json({ success: true, data: result, message: 'Return processed' });
   } catch (err) { return handleAppError(err, c); }
 }
@@ -57,7 +57,7 @@ export async function advanceStageController(c: Context) {
   if (!parsed.success) return c.json({ success: false, error: parsed.error.message, code: 'VALIDATION_ERROR' }, 422);
   const user = c.get('user') as AccessTokenPayload;
   try {
-    const result = await advanceReturnStage(parsed.data, user.schoolId);
+    const result = await advanceReturnStage(parsed.data, user.schoolId!);
     return c.json({ success: true, data: result, message: 'Stage advanced' });
   } catch (err) { return handleAppError(err, c); }
 }
@@ -113,6 +113,6 @@ export async function myHoldsController(c: Context) {
 /** GET /api/v1/circulation/shelving-queue */
 export async function shelvingQueueController(c: Context) {
   const user = c.get('user') as AccessTokenPayload;
-  const items = await getShelvingQueue(user.schoolId);
+  const items = await getShelvingQueue(user.schoolId!);
   return c.json({ success: true, data: items, message: 'Shelving queue retrieved' });
 }

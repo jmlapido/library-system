@@ -111,7 +111,7 @@ notificationsRouter.post(
 
     const result = await sendNotification(type as NotificationType, {
       userId: targetUser.id,
-      schoolId: targetUser.schoolId,
+      schoolId: targetUser.schoolId!,
       userFullName: targetUser.fullName,
       userEmail: targetUser.email,
       userPhone: null,

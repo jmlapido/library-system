@@ -74,7 +74,7 @@ export async function getListWithItemsController(c: Context<{ Variables: Variabl
   const user = c.get('user');
   const listId = c.req.param('id') ?? '';
   try {
-    const list = await readingListsService.getListWithItems(listId, user.sub, user.schoolId);
+    const list = await readingListsService.getListWithItems(listId, user.sub, user.schoolId!);
     return c.json({ success: true, data: list });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -94,7 +94,7 @@ export async function createListController(c: Context<{ Variables: Variables }>)
     const data: { title: string; description?: string; isPublic?: boolean } = { title: body.title };
     if (body.description !== undefined) data.description = body.description;
     if (body.isPublic !== undefined) data.isPublic = body.isPublic;
-    const list = await readingListsService.createList(user.sub, user.schoolId, data);
+    const list = await readingListsService.createList(user.sub, user.schoolId!, data);
     return c.json({ success: true, data: list, message: 'Reading list created' }, 201);
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -116,7 +116,7 @@ export async function updateListController(c: Context<{ Variables: Variables }>)
     if (body.title !== undefined) data.title = body.title;
     if (body.description !== undefined) data.description = body.description;
     if (body.isPublic !== undefined) data.isPublic = body.isPublic;
-    const list = await readingListsService.updateList(listId, user.sub, user.schoolId, data);
+    const list = await readingListsService.updateList(listId, user.sub, user.schoolId!, data);
     return c.json({ success: true, data: list, message: 'Reading list updated' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -132,7 +132,7 @@ export async function deleteListController(c: Context<{ Variables: Variables }>)
   const user = c.get('user');
   const listId = c.req.param('id') ?? '';
   try {
-    await readingListsService.deleteList(listId, user.sub, user.schoolId);
+    await readingListsService.deleteList(listId, user.sub, user.schoolId!);
     return c.json({ success: true, message: 'Reading list deleted' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -150,7 +150,7 @@ export async function addBookController(c: Context<{ Variables: Variables }>) {
   const body = await parseBody(c, AddBookSchema);
   if (body instanceof Response) return body;
   try {
-    const item = await readingListsService.addBook(listId, user.sub, user.schoolId, body.bookId, body.status);
+    const item = await readingListsService.addBook(listId, user.sub, user.schoolId!, body.bookId, body.status);
     return c.json({ success: true, data: item, message: 'Book added to list' }, 201);
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -169,7 +169,7 @@ export async function updateItemStatusController(c: Context<{ Variables: Variabl
   const body = await parseBody(c, UpdateItemStatusSchema);
   if (body instanceof Response) return body;
   try {
-    const item = await readingListsService.updateItemStatus(listId, user.sub, user.schoolId, bookId, body.status);
+    const item = await readingListsService.updateItemStatus(listId, user.sub, user.schoolId!, bookId, body.status);
     return c.json({ success: true, data: item, message: 'Status updated' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -186,7 +186,7 @@ export async function removeBookController(c: Context<{ Variables: Variables }>)
   const listId = c.req.param('id') ?? '';
   const bookId = c.req.param('bookId') ?? '';
   try {
-    await readingListsService.removeBook(listId, user.sub, user.schoolId, bookId);
+    await readingListsService.removeBook(listId, user.sub, user.schoolId!, bookId);
     return c.json({ success: true, message: 'Book removed from list' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));

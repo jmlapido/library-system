@@ -12,7 +12,7 @@ type Variables = { user: AccessTokenPayload };
 export async function getSettingsController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await getSchoolSettings(user.schoolId);
+    const data = await getSchoolSettings(user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     if (err instanceof AppError) {
@@ -50,7 +50,7 @@ export async function updateSettingsController(c: Context<{ Variables: Variables
   }
 
   try {
-    const settings = await updateSchoolSettings(user.schoolId, infoResult.data, settingsResult.data);
+    const settings = await updateSchoolSettings(user.schoolId!, infoResult.data, settingsResult.data);
     return c.json({ success: true, data: settings });
   } catch (err) {
     if (err instanceof AppError) {

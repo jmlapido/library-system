@@ -21,7 +21,7 @@ export async function getPermissionsController(c: Context<{ Variables: Variables
   const targetId = c.req.param('id') ?? '';
   const admin = c.get('user');
   try {
-    const permissions = await permissionsService.getUserGrantedPermissionsScoped(targetId, admin.schoolId);
+    const permissions = await permissionsService.getUserGrantedPermissionsScoped(targetId, admin.schoolId!);
     return c.json({ success: true, data: { permissions } });
   } catch (err) {
     if (err instanceof AppError) {
@@ -55,7 +55,7 @@ export async function setPermissionsController(c: Context<{ Variables: Variables
       targetId,
       parsed.data.permissions,
       admin.sub,
-      admin.schoolId,
+      admin.schoolId!,
     );
     return c.json({ success: true, data: { permissions: parsed.data.permissions } });
   } catch (err) {

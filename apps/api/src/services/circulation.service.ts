@@ -41,7 +41,7 @@ async function activateNextHold(bookId: string): Promise<void> {
  * Check out a copy to a user. Librarians may specify userId; students use their own JWT sub.
  */
 export async function checkout(input: CheckoutInput, requestor: AccessTokenPayload) {
-  const { schoolId } = requestor;
+  const schoolId = requestor.schoolId!;
   const userId = input.userId ?? requestor.sub;
 
   const copy = await findCopy(input.barcode, input.inventoryId, schoolId);
@@ -67,8 +67,8 @@ export async function checkout(input: CheckoutInput, requestor: AccessTokenPaylo
 
   await db.update(bookInventory).set({ status: 'checked_out', updatedAt: new Date() }).where(eq(bookInventory.id, copy.id));
   await refreshBookIndex(copy.bookId);
-  checkAndAwardBadges(userId, schoolId).catch(() => {}); // non-blocking
-  updateChallengeProgressOnCheckout(userId, schoolId).catch(() => {}); // non-blocking
+  checkAndAwardBadges(userId, schoolId!).catch(() => {}); // non-blocking
+  updateChallengeProgressOnCheckout(userId, schoolId!).catch(() => {}); // non-blocking
   return record;
 }
 
@@ -161,7 +161,7 @@ export async function renewCheckout(input: RenewInput, requestor: AccessTokenPay
  */
 export async function placeHold(input: PlaceHoldInput, requestor: AccessTokenPayload) {
   const [book] = await db.select({ id: books.id }).from(books)
-    .where(and(eq(books.id, input.bookId), eq(books.schoolId, requestor.schoolId), eq(books.isDeleted, false)));
+    .where(and(eq(books.id, input.bookId), eq(books.schoolId, requestor.schoolId!), eq(books.isDeleted, false)));
   if (!book) throw new AppError('BOOK_NOT_FOUND', 'Book not found');
 
   const [existing] = await db.select({ id: holds.id }).from(holds)

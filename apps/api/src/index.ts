@@ -20,6 +20,7 @@ import { schoolsRouter } from './routes/schools.js';
 import { oauthRouter } from './routes/oauth.js';
 import { ldapRouter } from './routes/ldap.js';
 import { webhooksRouter } from './routes/webhooks.js';
+import { superAdminRouter } from './routes/superAdmin.js';
 import { startWebhookWorker } from './workers/webhook.worker.js';
 import { registry } from './lib/metrics.js';
 import { metricsMiddleware } from './middleware/metrics.js';
@@ -70,6 +71,7 @@ app.route('/api/v1', schoolsRouter);
 app.route('/api/v1/auth', oauthRouter);
 app.route('/api/v1/auth', ldapRouter);
 app.route('/api/v1/webhooks', webhooksRouter);
+app.route('/api/v1/super-admin', superAdminRouter);
 
 app.notFound((c) => c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404));
 

@@ -6,6 +6,7 @@ export const UserRoleSchema = z.enum([
   'librarian',
   'library_assistant',
   'admin',
+  'super_admin',
 ]);
 
 export const CreateUserSchema = z.object({

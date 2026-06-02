@@ -43,7 +43,7 @@ function errorStatus(code: string): 400 | 403 | 404 {
 export async function getAdminStatsController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await analyticsService.getAdminStats(user.schoolId);
+    const data = await analyticsService.getAdminStats(user.schoolId!);
     return c.json({ success: true, data, message: 'Dashboard stats retrieved' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -58,7 +58,7 @@ export async function getAdminStatsController(c: Context<{ Variables: Variables 
 export async function getOverdueReportController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await analyticsService.getOverdueReport(user.schoolId);
+    const data = await analyticsService.getOverdueReport(user.schoolId!);
     return c.json({ success: true, data, message: `${data.length} overdue checkout(s)` });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -76,7 +76,7 @@ export async function getPopularBooksController(c: Context<{ Variables: Variable
   const query = parseQuery(c, PopularQuerySchema);
   if (query instanceof Response) return query;
   try {
-    const data = await analyticsService.getPopularBooks(user.schoolId, query.limit);
+    const data = await analyticsService.getPopularBooks(user.schoolId!, query.limit);
     return c.json({ success: true, data, message: `Top ${data.length} popular book(s)` });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -94,7 +94,7 @@ export async function getActivityReportController(c: Context<{ Variables: Variab
   const query = parseQuery(c, ActivityQuerySchema);
   if (query instanceof Response) return query;
   try {
-    const data = await analyticsService.getActivityReport(user.schoolId, query.days);
+    const data = await analyticsService.getActivityReport(user.schoolId!, query.days);
     return c.json({ success: true, data, message: `Activity for last ${query.days} day(s)` });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -109,7 +109,7 @@ export async function getActivityReportController(c: Context<{ Variables: Variab
 export async function getInventoryAuditController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const data = await analyticsService.getInventoryAudit(user.schoolId);
+    const data = await analyticsService.getInventoryAudit(user.schoolId!);
     return c.json({ success: true, data, message: 'Inventory audit retrieved' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));

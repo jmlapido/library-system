@@ -69,7 +69,7 @@ export async function listClubsController(c: Context<{ Variables: Variables }>) 
   const filters: { status?: ClubStatus } = {};
   if (filtersResult.success && filtersResult.data.status) filters.status = filtersResult.data.status;
   try {
-    const clubs = await bookClubsService.listClubs(user.schoolId, filters);
+    const clubs = await bookClubsService.listClubs(user.schoolId!, filters);
     return c.json({ success: true, data: clubs });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -86,7 +86,7 @@ export async function createClubController(c: Context<{ Variables: Variables }>)
   const body = await parseBody(c, CreateClubSchema);
   if (body instanceof Response) return body;
   try {
-    const data: Parameters<typeof bookClubsService.createClub>[0] = { schoolId: user.schoolId, name: body.name };
+    const data: Parameters<typeof bookClubsService.createClub>[0] = { schoolId: user.schoolId!, name: body.name };
     if (body.description !== undefined) data.description = body.description;
     if (body.bookId !== undefined) data.bookId = body.bookId;
     if (body.startDate !== undefined) data.startDate = body.startDate;
@@ -107,7 +107,7 @@ export async function createClubController(c: Context<{ Variables: Variables }>)
 export async function getMyClubsController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   try {
-    const clubs = await bookClubsService.getMyClubs(user.sub, user.schoolId);
+    const clubs = await bookClubsService.getMyClubs(user.sub, user.schoolId!);
     return c.json({ success: true, data: clubs });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -123,7 +123,7 @@ export async function getClubController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   const clubId = c.req.param('id') ?? '';
   try {
-    const club = await bookClubsService.getClub(clubId, user.schoolId);
+    const club = await bookClubsService.getClub(clubId, user.schoolId!);
     return c.json({ success: true, data: club });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -165,7 +165,7 @@ export async function deleteClubController(c: Context<{ Variables: Variables }>)
   const user = c.get('user');
   const clubId = c.req.param('id') ?? '';
   try {
-    await bookClubsService.deleteClub(clubId, user.sub, user.schoolId);
+    await bookClubsService.deleteClub(clubId, user.sub, user.schoolId!);
     return c.json({ success: true, message: 'Book club deleted' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -181,7 +181,7 @@ export async function getClubMembersController(c: Context<{ Variables: Variables
   const user = c.get('user');
   const clubId = c.req.param('id') ?? '';
   try {
-    const members = await bookClubsService.getClubMembers(clubId, user.schoolId);
+    const members = await bookClubsService.getClubMembers(clubId, user.schoolId!);
     return c.json({ success: true, data: members });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));
@@ -197,7 +197,7 @@ export async function joinClubController(c: Context<{ Variables: Variables }>) {
   const user = c.get('user');
   const clubId = c.req.param('id') ?? '';
   try {
-    const member = await bookClubsService.joinClub(clubId, user.sub, user.schoolId);
+    const member = await bookClubsService.joinClub(clubId, user.sub, user.schoolId!);
     return c.json({ success: true, data: member, message: 'Joined book club' });
   } catch (err) {
     if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, errorStatus(err.code));

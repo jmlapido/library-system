@@ -42,3 +42,6 @@ export function requireRole(...roles: UserRole[]) {
     await next();
   });
 }
+
+/** Shorthand middleware that restricts access to super_admin role only. */
+export const requireSuperAdmin = requireRole('super_admin');

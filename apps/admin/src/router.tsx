@@ -9,10 +9,12 @@ import { BulkImportPage } from './features/bulk-import/BulkImportPage';
 import { SchoolSettingsPage } from './features/settings/SchoolSettingsPage';
 import { WebhooksPage } from './features/webhooks/WebhooksPage';
 import { OAuthCallbackPage } from './features/auth/OAuthCallbackPage';
+import { SchoolsManagementPage } from './features/schools/SchoolsManagementPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
   const role = useAuthStore((s) => s.user?.role);
+  if (role === 'super_admin') return <Navigate to="/schools" replace />;
   if (role === 'admin') return <Navigate to="/staff-management" replace />;
   return <Navigate to="/circulation" replace />;
 }
@@ -22,7 +24,7 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
   { path: '/auth/oauth-callback', element: <OAuthCallbackPage /> },
   {
     element: (
-      <ProtectedRoute roles={['librarian', 'library_assistant', 'admin']}>
+      <ProtectedRoute roles={['librarian', 'library_assistant', 'admin', 'super_admin']}>
         <AppShell />
       </ProtectedRoute>
     ),
@@ -98,6 +100,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['admin']}>
             <WebhooksPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/schools',
+        element: (
+          <ProtectedRoute roles={['super_admin']}>
+            <SchoolsManagementPage />
           </ProtectedRoute>
         ),
       },

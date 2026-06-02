@@ -11,7 +11,7 @@ export async function getRecommendationsController(c: Context) {
   const user = c.get('user') as AccessTokenPayload;
 
   try {
-    const recommendations = await getRecommendations(user.sub, user.schoolId);
+    const recommendations = await getRecommendations(user.sub, user.schoolId!);
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return c.json(

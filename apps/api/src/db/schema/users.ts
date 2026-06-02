@@ -8,6 +8,7 @@ export const userRoleEnum = pgEnum('user_role', [
   'librarian',
   'library_assistant',
   'admin',
+  'super_admin',
 ]);
 
 export const approvalStatusEnum = pgEnum('approval_status', [
@@ -25,7 +26,7 @@ export const users = pgTable('users', {
   fullName: varchar('full_name', { length: 255 }).notNull(),
   role: userRoleEnum('role').notNull(),
   gradeLevel: integer('grade_level'),
-  schoolId: uuid('school_id').notNull().references(() => schools.id),
+  schoolId: uuid('school_id').references(() => schools.id),
   isActive: boolean('is_active').default(true).notNull(),
   emailVerified: boolean('email_verified').default(false).notNull(),
   approvalStatus: approvalStatusEnum('approval_status').default('approved').notNull(),

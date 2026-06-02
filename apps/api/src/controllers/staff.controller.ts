@@ -90,7 +90,7 @@ export async function setPasswordHandler(c: Context) {
 export async function listPending(c: Context) {
   const user = c.get('user') as AccessTokenPayload;
   try {
-    const data = await staffService.listPendingStaff(user.schoolId);
+    const data = await staffService.listPendingStaff(user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     return errorResponse(c, err);
@@ -150,7 +150,7 @@ export async function createByAdmin(c: Context) {
 export async function listActive(c: Context) {
   const user = c.get('user') as AccessTokenPayload;
   try {
-    const data = await staffService.listActiveStaff(user.schoolId);
+    const data = await staffService.listActiveStaff(user.schoolId!);
     return c.json({ success: true, data });
   } catch (err) {
     return errorResponse(c, err);

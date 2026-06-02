@@ -79,7 +79,7 @@ async function processOverdueCheckouts(appUrl: string): Promise<void> {
       const daysOverdue = Math.floor((now.getTime() - row.dueDate.getTime()) / 86_400_000);
       const ctx: NotificationContext = {
         userId: row.userId,
-        schoolId: row.schoolId,
+        schoolId: row.schoolId!,
         checkoutId: row.checkoutId,
         userFullName: row.userFullName,
         userEmail: row.userEmail,
@@ -168,7 +168,7 @@ async function sendRemindersForDayOffset(
       const fcmTokens = await getFcmTokens(row.userId);
       const ctx: NotificationContext = {
         userId: row.userId,
-        schoolId: row.userSchoolId,
+        schoolId: row.userSchoolId!,
         checkoutId: row.checkoutId,
         userFullName: row.userFullName,
         userEmail: row.userEmail,
@@ -220,7 +220,7 @@ async function processHoldReady(appUrl: string): Promise<void> {
       const fcmTokens = await getFcmTokens(row.userId);
       const ctx: NotificationContext = {
         userId: row.userId,
-        schoolId: row.schoolId,
+        schoolId: row.schoolId!,
         holdId: row.holdId,
         userFullName: row.userFullName,
         userEmail: row.userEmail,
@@ -286,7 +286,7 @@ async function processHoldExpired(appUrl: string): Promise<void> {
 
       const ctx: NotificationContext = {
         userId: row.userId,
-        schoolId: row.schoolId,
+        schoolId: row.schoolId!,
         holdId: row.holdId,
         userFullName: row.userFullName,
         userEmail: row.userEmail,

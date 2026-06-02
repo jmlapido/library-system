@@ -1,0 +1,6 @@
+DO $$ BEGIN
+  ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'super_admin';
+EXCEPTION WHEN others THEN NULL;
+END $$;
+
+ALTER TABLE users ALTER COLUMN school_id DROP NOT NULL;

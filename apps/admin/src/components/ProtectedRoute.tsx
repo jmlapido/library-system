@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth';
 
 interface Props {
-  roles?: Array<'librarian' | 'library_assistant' | 'admin'>;
+  roles?: Array<'librarian' | 'library_assistant' | 'admin' | 'super_admin'>;
   permission?: string;
   children: ReactNode;
 }
