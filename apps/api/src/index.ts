@@ -23,6 +23,8 @@ import { webhooksRouter } from './routes/webhooks.js';
 import { superAdminRouter } from './routes/superAdmin.js';
 import { finesRouter } from './routes/fines.js';
 import { inventoryRouter } from './routes/inventory.js';
+import { schoolYearsRouter } from './routes/schoolYears.js';
+import { classSectionsRouter } from './routes/classSections.js';
 import { startWebhookWorker } from './workers/webhook.worker.js';
 import { startHoldExpiryWorker } from './workers/holdExpiry.worker.js';
 import { registry } from './lib/metrics.js';
@@ -77,6 +79,8 @@ app.route('/api/v1/webhooks', webhooksRouter);
 app.route('/api/v1/super-admin', superAdminRouter);
 app.route('/api/v1/fines', finesRouter);
 app.route('/api/v1/inventory', inventoryRouter);
+app.route('/api/v1/school-years', schoolYearsRouter);
+app.route('/api/v1/class-sections', classSectionsRouter);
 
 app.notFound((c) => c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404));
 

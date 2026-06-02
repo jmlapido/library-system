@@ -12,4 +12,6 @@ export * from './bookClubs.js';
 export * from './engagement.js';
 export * from './oauthAccounts.js';
 export * from './webhooks.js';
+export * from './schoolYears.js';
+export * from './classSections.js';
 

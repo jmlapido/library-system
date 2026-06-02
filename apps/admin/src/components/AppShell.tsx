@@ -16,6 +16,8 @@ const NAV_ITEMS = [
   { label: 'Reports', to: '/reports', roles: ['librarian', 'admin'] },
   { label: 'Fines', to: '/fines', roles: ['librarian', 'admin'] },
   { label: 'Inventory', to: '/inventory', roles: ['librarian', 'admin'] },
+  { label: 'School Years', to: '/school-years', roles: ['admin'] },
+  { label: 'Class Sections', to: '/class-sections', roles: ['admin', 'librarian'] },
   { label: 'Settings', to: '/settings', roles: ['admin'] },
   { label: 'Webhooks', to: '/webhooks', roles: ['admin'] },
   { label: 'Audit Log', to: '/audit-log', roles: ['admin'] },

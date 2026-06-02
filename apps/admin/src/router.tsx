@@ -17,6 +17,8 @@ import { ShelvingQueuePage } from './features/shelving/ShelvingQueuePage';
 import { AuditLogPage } from './features/audit-log/AuditLogPage';
 import { FinesPage } from './features/fines/FinesPage';
 import { InventoryPage } from './features/inventory/InventoryPage';
+import { SchoolYearsPage } from './features/school-years/SchoolYearsPage';
+import { ClassSectionsPage } from './features/class-sections/ClassSectionsPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -121,6 +123,22 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['librarian', 'admin']}>
             <InventoryPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/school-years',
+        element: (
+          <ProtectedRoute roles={['admin']}>
+            <SchoolYearsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/class-sections',
+        element: (
+          <ProtectedRoute roles={['admin', 'librarian']}>
+            <ClassSectionsPage />
           </ProtectedRoute>
         ),
       },
