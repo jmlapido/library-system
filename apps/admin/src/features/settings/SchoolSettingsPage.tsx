@@ -19,6 +19,8 @@ interface SchoolSettings {
   maxFineAmount: number;
   overdueReminderDays: number;
   timezone: string;
+  // Hold settings
+  holdExpiryDays: number;
   // Notification settings
   reminderDaysBefore: number[];
   overdueRepeatEvery: number;
@@ -68,6 +70,7 @@ const DEFAULTS: FormValues = {
   maxFineAmount: 0,
   overdueReminderDays: 2,
   timezone: 'Asia/Manila',
+  holdExpiryDays: 7,
   reminderDaysBefore: [3, 1],
   overdueRepeatEvery: 2,
   notificationTime: '08:00',
@@ -221,6 +224,27 @@ export function SchoolSettingsPage() {
           <NumField label="Student checkout limit" id="s-limit" value={form.studentCheckoutLimit} onChange={(v) => set('studentCheckoutLimit', v)} min={1} max={100} />
           <NumField label="Teacher checkout limit" id="t-limit" value={form.teacherCheckoutLimit} onChange={(v) => set('teacherCheckoutLimit', v)} min={1} max={100} />
           <NumField label="Overdue reminder (days before)" id="reminder" value={form.overdueReminderDays} onChange={(v) => set('overdueReminderDays', v)} min={0} max={30} />
+        </CardContent>
+      </Card>
+
+      {/* Hold Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Hold Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <NumField
+            label="Auto-expire holds after X days (0 = never)"
+            id="hold-expiry-days"
+            value={form.holdExpiryDays}
+            onChange={(v) => set('holdExpiryDays', v)}
+            min={0}
+            max={365}
+          />
+          <p className="text-xs text-muted-foreground">
+            Pending holds older than this many days will be automatically expired by the nightly job.
+            Set to 0 to disable automatic expiry.
+          </p>
         </CardContent>
       </Card>
 

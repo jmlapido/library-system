@@ -22,7 +22,9 @@ import { ldapRouter } from './routes/ldap.js';
 import { webhooksRouter } from './routes/webhooks.js';
 import { superAdminRouter } from './routes/superAdmin.js';
 import { finesRouter } from './routes/fines.js';
+import { inventoryRouter } from './routes/inventory.js';
 import { startWebhookWorker } from './workers/webhook.worker.js';
+import { startHoldExpiryWorker } from './workers/holdExpiry.worker.js';
 import { registry } from './lib/metrics.js';
 import { metricsMiddleware } from './middleware/metrics.js';
 
@@ -74,6 +76,7 @@ app.route('/api/v1/auth', ldapRouter);
 app.route('/api/v1/webhooks', webhooksRouter);
 app.route('/api/v1/super-admin', superAdminRouter);
 app.route('/api/v1/fines', finesRouter);
+app.route('/api/v1/inventory', inventoryRouter);
 
 app.notFound((c) => c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404));
 
@@ -87,4 +90,5 @@ app.onError((err, c) => {
 
 if (process.env.NODE_ENV !== 'test') {
   startWebhookWorker();
+  startHoldExpiryWorker();
 }

@@ -5,6 +5,7 @@ import {
   checkout, returnBook, advanceReturnStage, renewCheckout,
   placeHold, cancelHold, getUserCheckouts, getUserHolds, getShelvingQueue,
 } from '../services/circulation.service.js';
+import { manualExpireHold } from '../services/holdExpiry.service.js';
 import { AppError } from '../utils/errors.js';
 import type { AccessTokenPayload } from '../lib/jwt.js';
 
@@ -115,4 +116,20 @@ export async function shelvingQueueController(c: Context) {
   const user = c.get('user') as AccessTokenPayload;
   const items = await getShelvingQueue(user.schoolId!);
   return c.json({ success: true, data: items, message: 'Shelving queue retrieved' });
+}
+
+/** DELETE /api/v1/circulation/holds/:id/expire — manually expire a hold (librarian+). */
+export async function expireHoldController(c: Context) {
+  const holdId = c.req.param('id')!;
+  const user = c.get('user') as AccessTokenPayload;
+  try {
+    await manualExpireHold(holdId, user.schoolId!);
+    return c.json({ success: true, data: { holdId, status: 'expired' }, message: 'Hold expired' });
+  } catch (err) {
+    if (err instanceof AppError) {
+      const status = err.code === 'HOLD_NOT_FOUND' ? 404 : 422;
+      return c.json({ success: false, error: err.message, code: err.code }, status);
+    }
+    throw err;
+  }
 }

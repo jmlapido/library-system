@@ -4,6 +4,7 @@ import {
   checkoutController, returnController, advanceStageController,
   renewController, placeHoldController, cancelHoldController,
   myCheckoutsController, myHoldsController, shelvingQueueController,
+  expireHoldController,
 } from '../controllers/circulation.controller.js';
 
 export const circulationRouter = new Hono();
@@ -30,3 +31,6 @@ circulationRouter.get('/my/holds', requireAuth, myHoldsController);
 
 // Staff shelving queue
 circulationRouter.get('/shelving-queue', ...staffOnly, shelvingQueueController);
+
+// Manual hold expiry — staff only
+circulationRouter.delete('/holds/:id/expire', ...staffOnly, expireHoldController);

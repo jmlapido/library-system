@@ -38,6 +38,8 @@ export const SchoolSettingsSchema = z.object({
   ldapSearchFilter: z.string().max(255).default('(mail={{email}})'),
   ldapEmailAttribute: z.string().max(100).default('mail'),
   ldapNameAttribute: z.string().max(100).default('displayName'),
+  // Hold expiry
+  holdExpiryDays: z.coerce.number().int().min(0).max(365).default(7),
 });
 
 export type SchoolSettings = z.infer<typeof SchoolSettingsSchema>;
