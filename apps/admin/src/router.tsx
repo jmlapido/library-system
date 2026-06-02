@@ -16,6 +16,7 @@ import { StudentsPage } from './features/students/StudentsPage';
 import { ShelvingQueuePage } from './features/shelving/ShelvingQueuePage';
 import { AuditLogPage } from './features/audit-log/AuditLogPage';
 import { FinesPage } from './features/fines/FinesPage';
+import { InventoryPage } from './features/inventory/InventoryPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -112,6 +113,14 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: (
           <ProtectedRoute roles={['librarian', 'admin']}>
             <FinesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/inventory',
+        element: (
+          <ProtectedRoute roles={['librarian', 'admin']}>
+            <InventoryPage />
           </ProtectedRoute>
         ),
       },
