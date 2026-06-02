@@ -2,7 +2,8 @@
 
 > Last updated: 2026-06-02
 > Branch: `master` | Tests: 469 passing | Typecheck: clean
-> Last commit: `e876c1f` — All 4 phases complete
+> Last commit: `0f1efb6` — PROGRESS.md updated, all 4 phases complete
+> Next: Phase 5 (Tasks 62–70) — Admin UI completion & operations
 
 ---
 
@@ -207,12 +208,69 @@ Goal: Catalog search → Checkout/return → Web portal → Auth
 
 ---
 
+## Phase 5 — Admin Completion & Operations ⬜ PENDING
+
+Goal: Fill placeholder admin pages, add fine management, notification config, hold expiry, inventory tools.
+
+### Group T: Admin UI Stubs
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 62 | Admin Dashboard home | Overview metrics: checkouts today, overdue count, holds queue, active users, recent activity | ⬜ |
+| 63 | Catalog management UI | Book list (TanStack Table), add/edit dialog with ISBN auto-fill + AI metadata assist, copy management | ⬜ |
+| 64 | Students management UI | Student roster list, search by name/ID, view profile + checkout history, reset PIN | ⬜ |
+| 65 | Shelving queue UI | Dedicated page: returned → being_processed → shelved; scan/tap to advance stage; timestamps | ⬜ |
+| 66 | Audit log UI | Paginated table of admin actions — actor, action, affected record, timestamp; filter by action type | ⬜ |
+
+### Group U: Operations & Configuration
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 67 | Fine management | `fine_per_day` + `grace_period_days` in school settings schema; admin fines list; waive + mark-paid endpoints | ⬜ |
+| 68 | Notification settings | `reminder_days_before`, `overdue_repeat_every`, `notification_time`, `sms_sender_id` in school settings; scheduler reads from DB | ⬜ |
+| 69 | Hold expiry | `hold_expiry_days` school setting; BullMQ daily job auto-expires holds; admin manual override endpoint | ⬜ |
+| 70 | Inventory tools | Shelf audit (scan barcodes vs expected); missing books report; condition update per copy | ⬜ |
+
+---
+
+## Phase 6 — Kiosk UI, Teacher Features & Polish ⬜ PENDING
+
+Goal: Build the kiosk surface (spec'd in detail), add school year/class section teacher workflow, S3 file storage, i18n.
+
+### Group V: Kiosk UI
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 71 | Kiosk base | `/kiosk` route in `apps/web`; attract/idle screen (animated book covers, school branding); guest mode; auto-logout countdown (configurable, default 2min) | ⬜ |
+| 72 | Kiosk AI search bar | Hero search bar; Framer Motion typewriter placeholder cycling English + Filipino examples; animated suggestion chips; chips refresh every 30s; bilingual per school language setting | ⬜ |
+| 73 | Kiosk checkout flow | Scan barcode (USB or camera) OR type call number; confirm book (cover + title + due date); "Confirm Checkout" tap; receipt display; auto-logout countdown | ⬜ |
+
+### Group W: Teacher & School Year Features
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 74 | School year management | `school_years` table + API; admin UI (create, set active, archive); year lifecycle (active → archived at end date) | ⬜ |
+| 75 | Class sections | `class_sections` table; teacher CRUD — create section, add/remove students, multi-teacher access; year archiving; admin UI + teacher portal | ⬜ |
+| 76 | Teacher-referred books | Assign required/optional reading per section + school year; required/optional flag + teacher note; student kiosk shows "📚 Recommended by your teacher" | ⬜ |
+| 77 | Student interest onboarding | First-login interest-setting screen (interest chip grid: Space, Animals, Mystery, Sports…); stored on user profile; used by AI recommendation engine | ⬜ |
+
+### Group X: Polish & Infrastructure
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| 78 | Book cover uploads + S3/MinIO | MinIO container in docker-compose; upload service; `PATCH /catalog/books/:id/cover`; admin catalog UI; serve via signed URL | ⬜ |
+| 79 | i18n Filipino strings | Complete `tl` translation file for `apps/web`; kiosk bilingual toggle; language selector in student profile; all kiosk AI examples in Filipino | ⬜ |
+| 80 | RFID Web USB API | HF 13.56 MHz ISO 15693 Web USB integration in browser; encode book ID + copy number to RFID tag; read tag on checkout/return; Zebra ZD421-R ZPL RFID encoding path | ⬜ |
+
+---
+
 ## Quick Stats
 
 | Metric | Count |
 |--------|-------|
-| Phases complete | **4 / 4** |
+| Phases complete | **4 / 6** |
 | Tasks complete | **61** |
+| Tasks remaining | **19 (Tasks 62–80)** |
 | API test files | 32 |
 | API tests passing | **328** |
 | Admin tests passing | **92** |
