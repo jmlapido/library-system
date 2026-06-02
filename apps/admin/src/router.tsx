@@ -7,6 +7,7 @@ import { CirculationPage } from './features/circulation/CirculationPage';
 import { ReportsPage } from './features/reports/ReportsPage';
 import { BulkImportPage } from './features/bulk-import/BulkImportPage';
 import { SchoolSettingsPage } from './features/settings/SchoolSettingsPage';
+import { OAuthCallbackPage } from './features/auth/OAuthCallbackPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -17,6 +18,7 @@ function RoleRedirect() {
 
 export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+  { path: '/auth/oauth-callback', element: <OAuthCallbackPage /> },
   {
     element: (
       <ProtectedRoute roles={['librarian', 'library_assistant', 'admin']}>

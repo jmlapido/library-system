@@ -17,6 +17,20 @@ interface SchoolSettings {
   finePerDay: number;
   overdueReminderDays: number;
   timezone: string;
+  ssoGoogleEnabled: boolean;
+  ssoGoogleClientId: string;
+  ssoGoogleClientSecret: string;
+  ssoMicrosoftEnabled: boolean;
+  ssoMicrosoftClientId: string;
+  ssoMicrosoftClientSecret: string;
+  ldapEnabled: boolean;
+  ldapUrl: string;
+  ldapBaseDn: string;
+  ldapBindDn: string;
+  ldapBindPassword: string;
+  ldapSearchFilter: string;
+  ldapEmailAttribute: string;
+  ldapNameAttribute: string;
 }
 
 interface SchoolInfo {
@@ -44,6 +58,20 @@ const DEFAULTS: FormValues = {
   finePerDay: 0,
   overdueReminderDays: 2,
   timezone: 'Asia/Manila',
+  ssoGoogleEnabled: false,
+  ssoGoogleClientId: '',
+  ssoGoogleClientSecret: '',
+  ssoMicrosoftEnabled: false,
+  ssoMicrosoftClientId: '',
+  ssoMicrosoftClientSecret: '',
+  ldapEnabled: false,
+  ldapUrl: '',
+  ldapBaseDn: '',
+  ldapBindDn: '',
+  ldapBindPassword: '',
+  ldapSearchFilter: '(mail={{email}})',
+  ldapEmailAttribute: 'mail',
+  ldapNameAttribute: 'displayName',
 };
 
 function toForm(data: SettingsResponse): FormValues {
@@ -200,6 +228,125 @@ export function SchoolSettingsPage() {
           </div>
           {form.fineEnabled && (
             <NumField label="Fine per day (₱)" id="fine-day" value={form.finePerDay} onChange={(v) => set('finePerDay', v)} min={0} max={1000} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* SSO */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Single Sign-On (SSO)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Google */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <input
+                id="sso-google"
+                type="checkbox"
+                checked={form.ssoGoogleEnabled}
+                onChange={(e) => set('ssoGoogleEnabled', e.target.checked)}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="sso-google">Enable Google SSO</Label>
+            </div>
+            {form.ssoGoogleEnabled && (
+              <div className="pl-7 space-y-3">
+                <div className="space-y-1">
+                  <Label htmlFor="google-client-id">Google Client ID</Label>
+                  <Input
+                    id="google-client-id"
+                    value={form.ssoGoogleClientId}
+                    onChange={(e) => set('ssoGoogleClientId', e.target.value)}
+                    placeholder="xxxxxxxx.apps.googleusercontent.com"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="google-client-secret">Google Client Secret</Label>
+                  <Input
+                    id="google-client-secret"
+                    type="password"
+                    value={form.ssoGoogleClientSecret}
+                    onChange={(e) => set('ssoGoogleClientSecret', e.target.value)}
+                    placeholder="GOCSPX-…"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Microsoft */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <input
+                id="sso-microsoft"
+                type="checkbox"
+                checked={form.ssoMicrosoftEnabled}
+                onChange={(e) => set('ssoMicrosoftEnabled', e.target.checked)}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="sso-microsoft">Enable Microsoft SSO</Label>
+            </div>
+            {form.ssoMicrosoftEnabled && (
+              <div className="pl-7 space-y-3">
+                <div className="space-y-1">
+                  <Label htmlFor="ms-client-id">Microsoft Client (Application) ID</Label>
+                  <Input
+                    id="ms-client-id"
+                    value={form.ssoMicrosoftClientId}
+                    onChange={(e) => set('ssoMicrosoftClientId', e.target.value)}
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="ms-client-secret">Microsoft Client Secret</Label>
+                  <Input
+                    id="ms-client-secret"
+                    type="password"
+                    value={form.ssoMicrosoftClientSecret}
+                    onChange={(e) => set('ssoMicrosoftClientSecret', e.target.value)}
+                    placeholder="Secret value…"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* LDAP */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">LDAP / Active Directory</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <input id="ldap-enabled" type="checkbox" checked={form.ldapEnabled} onChange={(e) => set('ldapEnabled', e.target.checked)} className="h-4 w-4" />
+            <Label htmlFor="ldap-enabled">Enable LDAP authentication for staff</Label>
+          </div>
+          {form.ldapEnabled && (
+            <div className="space-y-3">
+              {([
+                ['ldapUrl', 'Server URL', 'ldap://192.168.1.10:389'],
+                ['ldapBaseDn', 'Base DN', 'DC=school,DC=edu,DC=ph'],
+                ['ldapBindDn', 'Bind DN (service account)', 'CN=ldap-reader,OU=Service,DC=school,DC=edu,DC=ph'],
+                ['ldapSearchFilter', 'Search filter', '(mail={{email}})'],
+                ['ldapEmailAttribute', 'Email attribute', 'mail'],
+                ['ldapNameAttribute', 'Name attribute', 'displayName'],
+              ] as [keyof FormValues, string, string][]).map(([key, label, placeholder]) => (
+                <div key={key} className="space-y-1">
+                  <Label htmlFor={key}>{label}</Label>
+                  <Input id={key} value={String(form[key])} onChange={(e) => set(key, e.target.value)} placeholder={placeholder} />
+                </div>
+              ))}
+              <div className="space-y-1">
+                <Label htmlFor="ldapBindPassword">Bind password</Label>
+                <Input id="ldapBindPassword" type="password" value={form.ldapBindPassword} onChange={(e) => set('ldapBindPassword', e.target.value)} />
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={() => api.post('/auth/ldap/test-connection', {}).then(() => alert('LDAP connection successful!')).catch((e: unknown) => alert(`LDAP error: ${e instanceof Error ? e.message : 'Unknown'}`))}>
+                Test Connection
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

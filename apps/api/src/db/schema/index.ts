@@ -10,4 +10,5 @@ export * from './pushSubscriptions.js';
 export * from './readingLists.js';
 export * from './bookClubs.js';
 export * from './engagement.js';
+export * from './oauthAccounts.js';
 

@@ -17,6 +17,8 @@ import { challengesRouter } from './routes/challenges.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { importRouter } from './routes/import.js';
 import { schoolsRouter } from './routes/schools.js';
+import { oauthRouter } from './routes/oauth.js';
+import { ldapRouter } from './routes/ldap.js';
 import { registry } from './lib/metrics.js';
 import { metricsMiddleware } from './middleware/metrics.js';
 
@@ -63,6 +65,8 @@ app.route('/api/v1/challenges', challengesRouter);
 app.route('/api/v1', analyticsRouter);
 app.route('/api/v1', importRouter);
 app.route('/api/v1', schoolsRouter);
+app.route('/api/v1/auth', oauthRouter);
+app.route('/api/v1/auth', ldapRouter);
 
 app.notFound((c) => c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404));
 

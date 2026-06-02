@@ -15,6 +15,22 @@ export const SchoolSettingsSchema = z.object({
   finePerDay: z.coerce.number().min(0).max(1000).default(0),
   overdueReminderDays: z.coerce.number().int().min(0).max(30).default(2),
   timezone: z.string().min(1).max(100).default('Asia/Manila'),
+  // OAuth SSO
+  ssoGoogleEnabled: z.boolean().default(false),
+  ssoGoogleClientId: z.string().max(255).default(''),
+  ssoGoogleClientSecret: z.string().max(512).default(''),
+  ssoMicrosoftEnabled: z.boolean().default(false),
+  ssoMicrosoftClientId: z.string().max(255).default(''),
+  ssoMicrosoftClientSecret: z.string().max(512).default(''),
+  // LDAP/AD SSO
+  ldapEnabled: z.boolean().default(false),
+  ldapUrl: z.string().max(255).default(''),
+  ldapBaseDn: z.string().max(512).default(''),
+  ldapBindDn: z.string().max(512).default(''),
+  ldapBindPassword: z.string().max(512).default(''),
+  ldapSearchFilter: z.string().max(255).default('(mail={{email}})'),
+  ldapEmailAttribute: z.string().max(100).default('mail'),
+  ldapNameAttribute: z.string().max(100).default('displayName'),
 });
 
 export type SchoolSettings = z.infer<typeof SchoolSettingsSchema>;

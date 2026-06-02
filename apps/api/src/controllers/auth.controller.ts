@@ -22,22 +22,27 @@ export async function loginController(c: Context) {
     return c.json({ success: true, data: result, message: 'Login successful' });
   } catch (err) {
     if (err instanceof AppError) {
-      const STATUS_BY_CODE: Record<string, 401 | 403> = {
+      const STATUS_BY_CODE: Record<string, 401 | 403 | 503> = {
         INVALID_CREDENTIALS: 401,
+        LDAP_AUTH_FAILED: 401,
         ACCOUNT_INACTIVE: 403,
         APPROVAL_PENDING: 403,
         EMAIL_NOT_VERIFIED: 403,
+        FORBIDDEN: 403,
+        LDAP_UNAVAILABLE: 503,
       };
       const status = STATUS_BY_CODE[err.code] ?? 500;
       const SAFE_MESSAGES: Record<string, string> = {
         INVALID_CREDENTIALS: 'Invalid email or password',
+        LDAP_AUTH_FAILED: 'Invalid credentials',
         ACCOUNT_INACTIVE: 'Account is inactive',
         APPROVAL_PENDING: 'Account is pending approval',
         EMAIL_NOT_VERIFIED: 'Email address not verified',
+        LDAP_UNAVAILABLE: 'Authentication service temporarily unavailable',
       };
       return c.json(
         { success: false, error: SAFE_MESSAGES[err.code] ?? 'Authentication failed', code: err.code },
-        status as 401 | 403 | 500
+        status as 401 | 403 | 500 | 503
       );
     }
     throw err;

@@ -2,10 +2,13 @@ import bcrypt from 'bcryptjs';
 import { eq, isNull } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { users, refreshTokens } from '../db/schema/index.js';
+import { schools } from '../db/schema/index.js';
 import { signAccessToken, signRefreshToken } from '../lib/jwt.js';
 import type { LoginInput } from 'shared';
 import { AppError } from '../utils/errors.js';
 import { getEffectivePermissions } from './permissions.service.js';
+import { verifyLdapCredentials, type LdapConfig } from './ldap.service.js';
+import { SchoolSettingsSchema, DEFAULT_SETTINGS } from './school.service.js';
 export { AppError };
 
 /**
@@ -30,13 +33,45 @@ export async function login(input: LoginInput) {
   if (user.approvalStatus === 'rejected') throw new AppError('ACCOUNT_INACTIVE', 'Account has been rejected');
   if (!user.isActive) throw new AppError('ACCOUNT_INACTIVE', 'Account is inactive');
 
-  const hashToCheck = isEmail ? user.passwordHash : user.pinHash;
-  if (!hashToCheck) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+  if (isEmail) {
+    // Check school LDAP settings for staff email logins
+    const [school] = await db
+      .select({ settings: schools.settings })
+      .from(schools)
+      .where(eq(schools.id, user.schoolId))
+      .limit(1);
 
-  const valid = await bcrypt.compare(input.credential, hashToCheck);
-  if (!valid) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+    const settings = SchoolSettingsSchema.safeParse({
+      ...DEFAULT_SETTINGS,
+      ...(school?.settings ?? {}),
+    });
+    const s = settings.success ? settings.data : DEFAULT_SETTINGS;
 
-  if (isEmail && !user.emailVerified) throw new AppError('EMAIL_NOT_VERIFIED', 'Please verify your email address before logging in');
+    if (s.ldapEnabled && s.ldapUrl && user.role !== 'student') {
+      const ldapConfig: LdapConfig = {
+        url: s.ldapUrl,
+        baseDn: s.ldapBaseDn,
+        bindDn: s.ldapBindDn,
+        bindPassword: s.ldapBindPassword,
+        searchFilter: s.ldapSearchFilter,
+        emailAttribute: s.ldapEmailAttribute,
+        nameAttribute: s.ldapNameAttribute,
+      };
+      // LDAP auth replaces password check for staff when LDAP is configured
+      await verifyLdapCredentials(input.identifier, input.credential, ldapConfig);
+    } else {
+      const hashToCheck = user.passwordHash;
+      if (!hashToCheck) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+      const valid = await bcrypt.compare(input.credential, hashToCheck);
+      if (!valid) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+      if (!user.emailVerified) throw new AppError('EMAIL_NOT_VERIFIED', 'Please verify your email address before logging in');
+    }
+  } else {
+    const hashToCheck = user.pinHash;
+    if (!hashToCheck) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+    const valid = await bcrypt.compare(input.credential, hashToCheck);
+    if (!valid) throw new AppError('INVALID_CREDENTIALS', 'Invalid credentials');
+  }
 
   const accessToken = signAccessToken({ sub: user.id, role: user.role, schoolId: user.schoolId });
   const rawRefreshToken = signRefreshToken();
