@@ -11,6 +11,7 @@ import { SchoolSettingsPage } from './features/settings/SchoolSettingsPage';
 import { WebhooksPage } from './features/webhooks/WebhooksPage';
 import { OAuthCallbackPage } from './features/auth/OAuthCallbackPage';
 import { SchoolsManagementPage } from './features/schools/SchoolsManagementPage';
+import { CatalogPage } from './features/catalog/CatalogPage';
 import { useAuthStore } from './stores/auth';
 
 function RoleRedirect() {
@@ -75,7 +76,7 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         path: '/catalog',
         element: (
           <ProtectedRoute roles={['librarian', 'admin']} permission="catalog.view">
-            <div className="p-6 text-muted-foreground">Catalog — coming in Task 33</div>
+            <CatalogPage />
           </ProtectedRoute>
         ),
       },
