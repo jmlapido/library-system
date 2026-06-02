@@ -7,6 +7,7 @@ import { checkouts } from '../db/schema/circulation.js';
 import { holds } from '../db/schema/circulation.js';
 import { readingLists, readingListItems } from '../db/schema/readingLists.js';
 import { redis } from '../lib/redis.js';
+import { findSimilarBooks, buildBookText } from './embedding.service.js';
 import type { Book } from '../db/schema/books.js';
 
 /** A book with AI-generated reasoning for why it suits the student. */
@@ -195,6 +196,37 @@ async function callClaude(prompt: string): Promise<ClaudeRecommendation[]> {
 }
 
 /**
+ * Merge vector-similar books (prioritized) with random candidate pool, deduplicating by ID.
+ */
+function mergeCandidates(
+  randomPool: Book[],
+  vectorResults: { bookId: string; similarity: number }[],
+  excludeIds: string[],
+): Book[] {
+  const poolMap = new Map(randomPool.map((b) => [b.id, b]));
+  const seen = new Set<string>(excludeIds);
+  const merged: Book[] = [];
+
+  for (const { bookId } of vectorResults) {
+    if (seen.has(bookId)) continue;
+    const book = poolMap.get(bookId);
+    if (book) {
+      merged.push(book);
+      seen.add(bookId);
+    }
+  }
+
+  for (const book of randomPool) {
+    if (!seen.has(book.id)) {
+      merged.push(book);
+      seen.add(book.id);
+    }
+  }
+
+  return merged;
+}
+
+/**
  * Get personalized book recommendations for a student.
  * Returns cached results if available (24h TTL).
  * Returns empty array if ANTHROPIC_API_KEY is not configured.
@@ -236,10 +268,21 @@ export async function getRecommendations(
     ...readingListBooks.map((b) => b.id),
   ];
 
-  const candidateBooks = await fetchCandidateBooks(schoolId, knownIds);
-  if (candidateBooks.length === 0) return [];
+  const mostRecent = recentCheckouts[0];
+  const queryText = mostRecent
+    ? buildBookText({ title: mostRecent.title, author: mostRecent.author, description: mostRecent.description ?? null, genre: mostRecent.genre ?? null })
+    : '';
 
-  const candidates: CandidateBook[] = candidateBooks.map((b) => ({
+  const [candidateBooks, vectorResults] = await Promise.all([
+    fetchCandidateBooks(schoolId, knownIds),
+    queryText ? findSimilarBooks(queryText, schoolId, 30, undefined) : Promise.resolve([]),
+  ]);
+
+  if (candidateBooks.length === 0 && vectorResults.length === 0) return [];
+
+  const mergedCandidates = mergeCandidates(candidateBooks, vectorResults, knownIds);
+
+  const candidates: CandidateBook[] = mergedCandidates.map((b) => ({
     id: b.id,
     title: b.title,
     author: b.author,
@@ -253,10 +296,10 @@ export async function getRecommendations(
 
   if (rawRecs.length === 0) return [];
 
-  const validIds = new Set(candidateBooks.map((b) => b.id));
+  const validIds = new Set(mergedCandidates.map((b) => b.id));
   const validRecs = rawRecs.filter((r) => validIds.has(r.bookId));
 
-  const bookMap = new Map(candidateBooks.map((b) => [b.id, b]));
+  const bookMap = new Map(mergedCandidates.map((b) => [b.id, b]));
   const result: RecommendedBook[] = validRecs
     .map((r) => {
       const book = bookMap.get(r.bookId);

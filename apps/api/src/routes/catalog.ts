@@ -10,6 +10,7 @@ import {
   addCopyController,
   updateCopyController,
   deleteCopyController,
+  semanticSearchController,
 } from '../controllers/catalog.controller.js';
 
 export const catalogRouter = new Hono();
@@ -17,6 +18,7 @@ export const catalogRouter = new Hono();
 const staffOnly = [requireAuth, requireRole('librarian', 'admin', 'library_assistant')] as const;
 
 catalogRouter.get('/isbn/:isbn', requireAuth, isbnLookupController);
+catalogRouter.get('/search/semantic', requireAuth, semanticSearchController);
 
 catalogRouter.get('/books', requireAuth, searchBooksController);
 catalogRouter.post('/books', ...staffOnly, createBookController);

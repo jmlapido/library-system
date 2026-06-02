@@ -4,6 +4,7 @@ import { books, bookInventory } from '../db/schema/books.js';
 import { meili, BOOKS_INDEX } from '../lib/meilisearch.js';
 import { lookupIsbn } from '../lib/isbn.js';
 import { AppError } from '../utils/errors.js';
+import { generateEmbedding, buildBookText, storeBookEmbedding } from './embedding.service.js';
 import type { Book, BookInventory } from '../db/schema/books.js';
 import type {
   CreateBookInput,
@@ -121,6 +122,10 @@ export async function createBook(input: CreateBookInput, schoolId: string) {
 
   await meili.index(BOOKS_INDEX).addDocuments([buildDocument(book, 1, 1)]);
 
+  generateEmbedding(buildBookText({ title: book.title, author: book.author, description: book.description ?? null, genre: book.genre ?? null }))
+    .then((vec) => vec ? storeBookEmbedding(book.id, vec) : undefined)
+    .catch(() => undefined);
+
   return { ...book, copies: [copy] };
 }
 
@@ -159,6 +164,11 @@ export async function updateBook(id: string, input: UpdateBookInput, schoolId: s
     .returning())[0]!;
 
   await refreshBookIndex(id);
+
+  generateEmbedding(buildBookText({ title: updated.title, author: updated.author, description: updated.description ?? null, genre: updated.genre ?? null }))
+    .then((vec) => vec ? storeBookEmbedding(updated.id, vec) : undefined)
+    .catch(() => undefined);
+
   return updated;
 }
 

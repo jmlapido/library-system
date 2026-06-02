@@ -18,6 +18,7 @@ import {
   updateCopy,
   deleteCopy,
 } from '../services/catalog.service.js';
+import { findSimilarBooks } from '../services/embedding.service.js';
 import { AppError } from '../utils/errors.js';
 
 function parseBody(c: Context) {
@@ -158,4 +159,19 @@ export async function deleteCopyController(c: Context) {
   } catch (err) {
     return handleAppError(err, c);
   }
+}
+
+/** GET /api/v1/catalog/search/semantic */
+export async function semanticSearchController(c: Context) {
+  const user = c.get('user') as { schoolId: string };
+  const q = c.req.query('q') ?? '';
+  const limit = Math.min(parseInt(c.req.query('limit') ?? '10', 10), 50);
+  const excludeBookId = c.req.query('excludeBookId');
+
+  if (!q.trim()) {
+    return c.json({ success: false, error: 'q parameter required', code: 'VALIDATION_ERROR' }, 400);
+  }
+
+  const results = await findSimilarBooks(q, user.schoolId, limit, excludeBookId);
+  return c.json({ success: true, data: results, message: 'Semantic search results' });
 }
