@@ -11,6 +11,7 @@ import {
   updateCopyController,
   deleteCopyController,
   semanticSearchController,
+  uploadCoverController,
 } from '../controllers/catalog.controller.js';
 
 export const catalogRouter = new Hono();
@@ -26,6 +27,7 @@ catalogRouter.get('/books/:id', requireAuth, getBookController);
 catalogRouter.patch('/books/:id', ...staffOnly, updateBookController);
 catalogRouter.delete('/books/:id', ...staffOnly, deleteBookController);
 
+catalogRouter.patch('/books/:id/cover', ...staffOnly, uploadCoverController);
 catalogRouter.post('/books/:id/copies', ...staffOnly, addCopyController);
 catalogRouter.patch('/books/:id/copies/:copyId', ...staffOnly, updateCopyController);
 catalogRouter.delete('/books/:id/copies/:copyId', ...staffOnly, deleteCopyController);

@@ -20,6 +20,10 @@ import {
 } from '../services/catalog.service.js';
 import { findSimilarBooks } from '../services/embedding.service.js';
 import { AppError } from '../utils/errors.js';
+import { uploadBookCover, ensureBucket } from '../services/storage.service.js';
+import { db } from '../db/index.js';
+import { books } from '../db/schema/index.js';
+import { eq } from 'drizzle-orm';
 
 function parseBody(c: Context) {
   return c.req.json().catch(() => {
@@ -174,4 +178,44 @@ export async function semanticSearchController(c: Context) {
 
   const results = await findSimilarBooks(q, user.schoolId, limit, excludeBookId);
   return c.json({ success: true, data: results, message: 'Semantic search results' });
+}
+
+const ALLOWED_COVER_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_COVER_BYTES = 5 * 1024 * 1024; // 5 MB
+
+/** PATCH /api/v1/catalog/books/:id/cover */
+export async function uploadCoverController(c: Context) {
+  const id = c.req.param('id') ?? '';
+  if (!id) return c.json({ success: false, error: 'Missing book id', code: 'MISSING_PARAM' }, 400);
+
+  let formData: FormData;
+  try {
+    formData = await c.req.formData();
+  } catch {
+    return c.json({ success: false, error: 'Expected multipart/form-data', code: 'INVALID_BODY' }, 400);
+  }
+
+  const file = formData.get('cover');
+  if (!(file instanceof File)) {
+    return c.json({ success: false, error: '"cover" file field is required', code: 'MISSING_FILE' }, 422);
+  }
+
+  if (!ALLOWED_COVER_TYPES.has(file.type)) {
+    return c.json({ success: false, error: 'Only JPEG, PNG, WebP, or GIF allowed', code: 'INVALID_TYPE' }, 422);
+  }
+
+  const buffer = await file.arrayBuffer();
+  if (buffer.byteLength > MAX_COVER_BYTES) {
+    return c.json({ success: false, error: 'Cover image must be under 5 MB', code: 'FILE_TOO_LARGE' }, 413);
+  }
+
+  try {
+    await ensureBucket();
+    const coverUrl = await uploadBookCover(id, new Uint8Array(buffer), file.type);
+    await db.update(books).set({ coverUrl }).where(eq(books.id, id));
+    return c.json({ success: true, data: { coverUrl }, message: 'Cover uploaded' });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Upload failed';
+    return c.json({ success: false, error: msg, code: 'UPLOAD_FAILED' }, 500);
+  }
 }

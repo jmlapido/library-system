@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -107,6 +107,9 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
   const { toast } = useToast();
   const [isbnLoading, setIsbnLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [coverUrl, setCoverUrl] = useState<string | null>(book?.coverUrl ?? null);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -122,6 +125,7 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
 
   useEffect(() => {
     reset(buildDefaults(book));
+    setCoverUrl(book?.coverUrl ?? null);
   }, [book, reset]);
 
   const isbnValue = watch('isbn');
@@ -155,6 +159,34 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
     toast({ title: 'AI fill coming soon' });
   }
 
+  /** Uploads the selected image file as the book cover. */
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !book) return;
+    const form = new FormData();
+    form.append('cover', file);
+    setCoverUploading(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL ?? '/api/v1'}/catalog/books/${book.id}/cover`,
+        {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${localStorage.getItem('librams-auth') ? JSON.parse(localStorage.getItem('librams-auth')!).state?.accessToken : ''}` },
+          body: form,
+        }
+      );
+      const json = await res.json() as { success: boolean; data?: { coverUrl: string }; error?: string };
+      if (!res.ok || !json.success) throw new Error(json.error ?? 'Upload failed');
+      setCoverUrl(json.data?.coverUrl ?? null);
+      toast({ title: 'Cover uploaded' });
+    } catch (err) {
+      toast({ title: err instanceof Error ? err.message : 'Upload failed', variant: 'destructive' });
+    } finally {
+      setCoverUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }
+
   /** Submits the form; calls create or update endpoint depending on mode. */
   async function onSubmit(data: BookFormData) {
     setSubmitting(true);
@@ -184,6 +216,38 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {isEdit && (
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-28 rounded border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                {coverUrl ? (
+                  <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-2xl">📚</span>
+                )}
+              </div>
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Book Cover</Label>
+                <p className="text-xs text-muted-foreground">JPEG, PNG, WebP or GIF · max 5 MB</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={coverUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {coverUploading ? 'Uploading…' : coverUrl ? 'Replace Cover' : 'Upload Cover'}
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleCoverUpload}
+                />
+              </div>
+            </div>
+          )}
+
           <FieldRow label="Title *" error={errors.title?.message}>
             <Input {...register('title')} placeholder="Book title" />
           </FieldRow>
