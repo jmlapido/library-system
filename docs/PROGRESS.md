@@ -1,9 +1,9 @@
 # LibraMS — Development Progress Tracker
 
 > Last updated: 2026-06-03
-> Branch: `master` | Tests: 399+ passing (api 350, web 49)
-> Last commit: `6d85b44` — fix: restore index.ts (Tasks 71-76 complete)
-> Next: Tasks 77-80 — student interests, S3/MinIO, i18n, RFID
+> Branch: `master` | Tests: 521 passing (api 350, admin 122, web 49)
+> Last commit: `3f2852c` — docs: PROGRESS.md update (Tasks 71–76 complete)
+> Next: Task 77 — student interest onboarding (`users.interests` col already in migration 0015)
 
 ---
 
