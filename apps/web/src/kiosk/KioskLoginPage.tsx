@@ -9,7 +9,7 @@ interface LoginResponse {
   data?: {
     accessToken: string;
     refreshToken: string;
-    user: { id: string; name: string; role: string; studentId: string | null; gradeLevel: string | null };
+    user: { id: string; name: string; role: string; studentId: string | null; gradeLevel: string | null; interests: string[] };
   };
   error?: string;
 }

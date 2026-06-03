@@ -90,7 +90,7 @@ export async function login(input: LoginInput) {
   return {
     accessToken,
     refreshToken: rawRefreshToken,
-    user: { id: user.id, fullName: user.fullName, role: user.role, schoolId: user.schoolId, effectivePermissions },
+    user: { id: user.id, fullName: user.fullName, role: user.role, schoolId: user.schoolId, interests: (user.interests ?? []) as string[], effectivePermissions },
   };
 }
 
@@ -169,6 +169,7 @@ export async function getMe(userId: string, role: string) {
       fullName: users.fullName,
       role: users.role,
       schoolId: users.schoolId,
+      interests: users.interests,
     })
     .from(users)
     .where(eq(users.id, userId))
@@ -177,5 +178,14 @@ export async function getMe(userId: string, role: string) {
   if (!user) throw new AppError('USER_NOT_FOUND', 'User not found');
 
   const effectivePermissions = await getEffectivePermissions(userId, role);
-  return { ...user, effectivePermissions };
+  return { ...user, interests: (user.interests ?? []) as string[], effectivePermissions };
+}
+
+/**
+ * Saves a student's selected interest tags.
+ * @param userId - The user's UUID.
+ * @param interests - Array of interest tag strings (max 20).
+ */
+export async function saveInterests(userId: string, interestList: string[]): Promise<void> {
+  await db.update(users).set({ interests: interestList }).where(eq(users.id, userId));
 }

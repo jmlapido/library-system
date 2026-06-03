@@ -1,7 +1,12 @@
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
+import { z } from 'zod';
 import { LoginSchema } from 'shared';
-import { AppError, login, refreshSession, logout, getMe } from '../services/auth.service.js';
+import { AppError, login, refreshSession, logout, getMe, saveInterests } from '../services/auth.service.js';
+
+const InterestsSchema = z.object({
+  interests: z.array(z.string().max(100)).max(20),
+});
 
 /** POST /api/v1/auth/login */
 export async function loginController(c: Context) {
@@ -90,5 +95,24 @@ export async function meController(c: Context) {
       return c.json({ success: false, error: err.message, code: err.code }, 404);
     }
     throw err;
+  }
+}
+
+/** PATCH /api/v1/auth/me/interests */
+export async function saveInterestsController(c: Context) {
+  const { sub } = c.get('user');
+  const body: unknown = await c.req.json().catch(() => {
+    throw new HTTPException(400, { message: 'Invalid JSON' });
+  });
+  const parsed = InterestsSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ success: false, error: parsed.error.message, code: 'VALIDATION_ERROR' }, 422);
+  }
+  try {
+    await saveInterests(sub, parsed.data.interests);
+    return c.json({ success: true, data: null, message: 'Interests saved' });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return c.json({ success: false, error: msg, code: 'SAVE_FAILED' }, 500);
   }
 }

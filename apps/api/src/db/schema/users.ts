@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, integer, boolean, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, integer, boolean, timestamp, pgEnum, index, jsonb } from 'drizzle-orm/pg-core';
 import { schools } from './schools.js';
 import { notificationChannelEnum } from './notificationEnums.js';
 
@@ -33,6 +33,7 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   notificationChannel: notificationChannelEnum('notification_channel'),
+  interests: jsonb('interests').$type<string[]>().default([]).notNull(),
 }, (table) => [
   index('users_school_id_idx').on(table.schoolId),
   index('users_role_idx').on(table.role),

@@ -12,6 +12,7 @@ import { ReadingListDetailPage } from './pages/ReadingListDetailPage';
 import { BookClubsPage } from './pages/BookClubsPage';
 import { BookClubDetailPage } from './pages/BookClubDetailPage';
 import { AchievementsPage } from './pages/AchievementsPage';
+import { OnboardingPage } from './pages/OnboardingPage';
 import { KioskShell } from './kiosk/KioskShell';
 import { AttractScreen } from './kiosk/AttractScreen';
 import { KioskGuestHome } from './kiosk/KioskGuestHome';
@@ -58,6 +59,8 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
+      // Onboarding: full-screen, no bottom nav
+      { path: '/onboarding', element: <OnboardingPage /> },
       {
         element: <AppShell />,
         children: [

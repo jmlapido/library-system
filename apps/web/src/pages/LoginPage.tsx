@@ -34,7 +34,7 @@ export function LoginPage() {
       const data = await api.post<{
         accessToken: string;
         refreshToken: string;
-        user: { id: string; name: string; role: string; studentId: string | null; gradeLevel: string | null };
+        user: { id: string; name: string; role: string; studentId: string | null; gradeLevel: string | null; interests: string[] };
       }>('/auth/login', { identifier, secret });
       setSession(data);
       navigate('/search', { replace: true });

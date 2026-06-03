@@ -14,7 +14,7 @@ describe('auth store', () => {
     useAuthStore.getState().setSession({
       accessToken: 'tok',
       refreshToken: 'ref',
-      user: { id: '1', name: 'Maria', role: 'student', studentId: '2024-001', gradeLevel: 'Grade 9' },
+      user: { id: '1', name: 'Maria', role: 'student', studentId: '2024-001', gradeLevel: 'Grade 9', interests: [] },
     });
     expect(useAuthStore.getState().isAuthenticated()).toBe(true);
     expect(useAuthStore.getState().accessToken).toBe('tok');
@@ -24,7 +24,7 @@ describe('auth store', () => {
     useAuthStore.getState().setSession({
       accessToken: 'tok',
       refreshToken: 'ref',
-      user: { id: '1', name: 'Maria', role: 'student', studentId: '2024-001', gradeLevel: 'Grade 9' },
+      user: { id: '1', name: 'Maria', role: 'student', studentId: '2024-001', gradeLevel: 'Grade 9', interests: [] },
     });
     useAuthStore.getState().logout();
     expect(useAuthStore.getState().isAuthenticated()).toBe(false);
