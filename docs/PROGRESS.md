@@ -2,8 +2,8 @@
 
 > Last updated: 2026-06-03
 > Branch: `master` | Tests: 521 passing (api 350, admin 122, web 49)
-> Last commit: `3f2852c` — docs: PROGRESS.md update (Tasks 71–76 complete)
-> Next: Task 77 — student interest onboarding (`users.interests` col already in migration 0015)
+> Last commit: `df03736` — Phase 6 complete (Tasks 77–80 done)
+> **Phase 6 COMPLETE — all 80 tasks done**
 
 ---
 
@@ -233,7 +233,7 @@ Goal: Fill placeholder admin pages, add fine management, notification config, ho
 
 ---
 
-## Phase 6 — Kiosk UI, Teacher Features & Polish 🔄 IN PROGRESS
+## Phase 6 — Kiosk UI, Teacher Features & Polish ✅ COMPLETE (2026-06-03)
 
 Goal: Build the kiosk surface (spec'd in detail), add school year/class section teacher workflow, S3 file storage, i18n.
 
@@ -252,15 +252,15 @@ Goal: Build the kiosk surface (spec'd in detail), add school year/class section 
 | 74 | School year management | `school_years` table + API (list/create/update/activate/delete); SchoolYearsPage admin UI | ✅ `981491d` |
 | 75 | Class sections | `class_sections` + junction tables; full CRUD + teacher/student roster management; ClassSectionsPage admin UI with detail drawer | ✅ `981491d` |
 | 76 | Teacher-referred books | `section_book_assignments` table (required/optional); GET/POST/DELETE `/class-sections/:id/books`; `GET /class-sections/my/assigned-books` for students; migration 0015 | ✅ `15fe38f` |
-| 77 | Student interest onboarding | First-login interest chip screen; `users.interests` JSONB column (migration 0015) | ⬜ |
+| 77 | Student interest onboarding | First-login interest chip screen; `users.interests` JSONB column (migration 0015); PATCH /auth/me/interests; useTranslation wired | ✅ `0667810` |
 
 ### Group X: Polish & Infrastructure
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 78 | Book cover uploads + S3/MinIO | MinIO container in docker-compose; upload service; `PATCH /catalog/books/:id/cover`; admin catalog UI; serve via signed URL | ⬜ |
-| 79 | i18n Filipino strings | Complete `tl` translation file for `apps/web`; kiosk bilingual toggle; language selector in student profile; all kiosk AI examples in Filipino | ⬜ |
-| 80 | RFID Web USB API | HF 13.56 MHz ISO 15693 Web USB integration in browser; encode book ID + copy number to RFID tag; read tag on checkout/return; Zebra ZD421-R ZPL RFID encoding path | ⬜ |
+| 78 | Book cover uploads + S3/MinIO | MinIO in docker-compose; storage.service.ts (S3Client forcePathStyle); PATCH /catalog/books/:id/cover (multipart, 5MB, JPEG/PNG/WebP/GIF); admin dialog cover preview+upload | ✅ `dd40322` |
+| 79 | i18n Filipino strings | Extended en.json+tl.json (onboarding, readingLists, bookClubs, achievements, kiosk); useTranslation wired in LoginPage, AccountPage, OnboardingPage | ✅ `badcbb6` |
+| 80 | RFID Web USB API | useRfidReader hook (ISO 15693 inventory+read commands, UID+bookId+copyNumber decode); RfidScanPage at /rfid; @types/w3c-web-usb; auto-navigate to /book/:id on read | ✅ `df03736` |
 
 ---
 
@@ -268,9 +268,9 @@ Goal: Build the kiosk surface (spec'd in detail), add school year/class section 
 
 | Metric | Count |
 |--------|-------|
-| Phases complete | **5.5 / 6** |
-| Tasks complete | **76** |
-| Tasks remaining | **4 (Tasks 77–80)** |
+| Phases complete | **6 / 6** ✅ |
+| Tasks complete | **80** |
+| Tasks remaining | **0** |
 | API tests passing | **350** |
 | Admin tests passing | **122** |
 | Web tests passing | **49** |
