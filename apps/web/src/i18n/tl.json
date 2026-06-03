@@ -16,6 +16,14 @@
     "submit": "Mag-sign In",
     "error": "Mali ang credentials. Subukan ulit."
   },
+  "onboarding": {
+    "title": "Ano ang gusto mong basahin?",
+    "subtitle": "Pumili ng ilang paksa — magmumungkahi kami ng mga libro para sa iyo.",
+    "continue": "Magpatuloy",
+    "continueWith": "Magpatuloy ({{count}} napili)",
+    "skip": "Preskong laktawan",
+    "saving": "Sine-save…"
+  },
   "search": {
     "placeholder": "Maghanap ng libro, may-akda, ISBN...",
     "allGenres": "Lahat",
@@ -50,9 +58,35 @@
     "holdReady": "Handa na — kunin bago {{date}}",
     "queuePosition": "Ikaw ay #{{position}} sa pila"
   },
+  "readingLists": {
+    "title": "Mga Reading List",
+    "empty": "Wala pang reading list.",
+    "create": "Bagong Listahan",
+    "books": "{{count}} libro",
+    "noBooks": "Walang libro sa listahang ito."
+  },
+  "bookClubs": {
+    "title": "Mga Book Club",
+    "empty": "Wala pang book club.",
+    "join": "Sumali",
+    "leave": "Umalis",
+    "members": "{{count}} miyembro",
+    "currentBook": "Kasalukuyang binabasa"
+  },
+  "achievements": {
+    "title": "Mga Tagumpay",
+    "badges": "Mga Badge",
+    "challenges": "Mga Hamon",
+    "noBadges": "Wala pang badge — magpatuloy sa pagbabasa!",
+    "noChallenges": "Walang aktibong hamon."
+  },
   "account": {
     "language": "Wika",
     "signOut": "Mag-sign Out",
+    "pushNotifications": "Mga Push Notification",
+    "pushSubtitle": "Mga paalala sa due date at mga abiso sa hold",
+    "enable": "I-enable",
+    "disable": "I-disable",
     "booksThisYear": "Libro ngayong taon",
     "gradeLevel": "Antas"
   },
@@ -62,5 +96,22 @@
     "notFound": "Hindi nakilala ang barcode",
     "permissionDenied": "Tinanggihan ang camera. Gamitin ang manual na pagpasok.",
     "manualPlaceholder": "Ilagay ang ISBN o barcode..."
+  },
+  "kiosk": {
+    "welcomeTitle": "Hanapin ang Iyong Susunod na Libro",
+    "welcomeSubtitle": "Makahanap ng isang kwentong magdadala sa iyo sa ibang lugar",
+    "tapToStart": "Pindutin kahit saan upang magsimula",
+    "search": "Hanapin",
+    "checkout": "Hiramin",
+    "scanBarcode": "I-scan ang Barcode",
+    "enterBarcode": "Ilagay ang barcode",
+    "confirm": "Kumpirmahin ang Pahiram",
+    "cancel": "Kanselahin",
+    "success": "Enjoy ang iyong libro!",
+    "dueDate": "Ibalik bago ang {{date}}",
+    "returningIn": "Babalik sa home screen sa loob ng {{seconds}} segundo…",
+    "inactive": "Nandito ka pa ba?",
+    "inactiveSubtitle": "Babalik sa home screen sa loob ng {{seconds}} segundo.",
+    "imHere": "Oo, nandito ako"
   }
 }

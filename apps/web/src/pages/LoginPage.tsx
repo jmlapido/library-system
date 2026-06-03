@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { api, ApiError } from '../lib/api';
 import { useAuthStore } from '../stores/auth';
 
@@ -11,6 +12,7 @@ function detectMode(value: string): 'studentId' | 'email' | 'unknown' {
 }
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const [identifier, setIdentifier] = useState('');
   const [secret, setSecret] = useState('');
   const [error, setError] = useState('');
@@ -20,11 +22,11 @@ export function LoginPage() {
   const setSession = useAuthStore((s) => s.setSession);
 
   const mode = detectMode(identifier);
-  const secretLabel = mode === 'studentId' ? 'PIN' : 'Password';
+  const secretLabel = mode === 'studentId' ? t('login.pin') : t('login.password');
   const secretType = mode === 'studentId' ? 'tel' : 'password';
   const detectionHint =
-    mode === 'studentId' ? 'Student ID detected' :
-    mode === 'email' ? 'Email detected' : '';
+    mode === 'studentId' ? t('login.detectedStudentId') :
+    mode === 'email' ? t('login.detectedEmail') : '';
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,7 +41,7 @@ export function LoginPage() {
       setSession(data);
       navigate('/search', { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? 'Invalid credentials. Please try again.' : 'Network error.');
+      setError(err instanceof ApiError ? t('login.error') : 'Network error.');
       setShake(true);
       setTimeout(() => setShake(false), 600);
     } finally {
@@ -63,14 +65,14 @@ export function LoginPage() {
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 48, marginBottom: 8 }}>📚</div>
-          <h1 style={{ color: 'white', fontSize: 24, fontWeight: 700, marginBottom: 4 }}>LibraMS</h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>Welcome back</p>
+          <h1 style={{ color: 'white', fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{t('login.title')}</h1>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>{t('login.subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div>
             <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, display: 'block', marginBottom: 4 }}>
-              Email or Student ID
+              {t('login.identifier')}
               {detectionHint && (
                 <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, marginLeft: 6 }}>
                   ({detectionHint})
@@ -133,7 +135,7 @@ export function LoginPage() {
               marginTop: 4,
             }}
           >
-            {loading ? '...' : 'Sign In'}
+            {loading ? '...' : t('login.submit')}
           </button>
         </form>
       </motion.div>

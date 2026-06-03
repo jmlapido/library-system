@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/auth';
 
@@ -24,6 +25,7 @@ const INTERESTS = [
  * Sets users.interests via PATCH /auth/me/interests, then redirects to /search.
  */
 export function OnboardingPage() {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const setInterests = useAuthStore((s) => s.setInterests);
@@ -72,10 +74,10 @@ export function OnboardingPage() {
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 48, marginBottom: 8 }}>📖</div>
           <h1 style={{ color: 'white', fontSize: 24, fontWeight: 700, margin: '0 0 8px' }}>
-            What do you like to read?
+            {t('onboarding.title')}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, margin: 0 }}>
-            Pick a few topics — we'll suggest books you'll actually enjoy.
+            {t('onboarding.subtitle')}
           </p>
         </div>
 
@@ -139,7 +141,7 @@ export function OnboardingPage() {
             transition: 'all 0.15s ease',
           }}
         >
-          {saving ? 'Saving…' : `Continue${selected.size > 0 ? ` (${selected.size} selected)` : ''}`}
+          {saving ? t('onboarding.saving') : selected.size > 0 ? t('onboarding.continueWith', { count: selected.size }) : t('onboarding.continue')}
         </button>
 
         <button
@@ -154,7 +156,7 @@ export function OnboardingPage() {
             padding: '8px',
           }}
         >
-          Skip for now
+          {t('onboarding.skip')}
         </button>
       </motion.div>
     </div>

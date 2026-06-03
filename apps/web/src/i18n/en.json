@@ -16,6 +16,14 @@
     "submit": "Sign In",
     "error": "Invalid credentials. Please try again."
   },
+  "onboarding": {
+    "title": "What do you like to read?",
+    "subtitle": "Pick a few topics — we'll suggest books you'll actually enjoy.",
+    "continue": "Continue",
+    "continueWith": "Continue ({{count}} selected)",
+    "skip": "Skip for now",
+    "saving": "Saving…"
+  },
   "search": {
     "placeholder": "Search books, authors, ISBN...",
     "allGenres": "All",
@@ -50,9 +58,35 @@
     "holdReady": "Ready — pick up by {{date}}",
     "queuePosition": "You are #{{position}} in line"
   },
+  "readingLists": {
+    "title": "Reading Lists",
+    "empty": "No reading lists yet.",
+    "create": "New List",
+    "books": "{{count}} books",
+    "noBooks": "This list has no books yet."
+  },
+  "bookClubs": {
+    "title": "Book Clubs",
+    "empty": "No book clubs yet.",
+    "join": "Join",
+    "leave": "Leave",
+    "members": "{{count}} members",
+    "currentBook": "Currently reading"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "badges": "Badges",
+    "challenges": "Challenges",
+    "noBadges": "No badges earned yet — keep reading!",
+    "noChallenges": "No active challenges."
+  },
   "account": {
     "language": "Language",
     "signOut": "Sign Out",
+    "pushNotifications": "Push Notifications",
+    "pushSubtitle": "Due date reminders and hold alerts",
+    "enable": "Enable",
+    "disable": "Disable",
     "booksThisYear": "Books this year",
     "gradeLevel": "Grade Level"
   },
@@ -62,5 +96,22 @@
     "notFound": "Barcode not recognized",
     "permissionDenied": "Camera access denied. Use manual entry.",
     "manualPlaceholder": "Enter ISBN or barcode..."
+  },
+  "kiosk": {
+    "welcomeTitle": "Discover Your Next Book",
+    "welcomeSubtitle": "Find a story that takes you somewhere new",
+    "tapToStart": "Tap anywhere to start",
+    "search": "Search",
+    "checkout": "Check Out",
+    "scanBarcode": "Scan Barcode",
+    "enterBarcode": "Enter barcode",
+    "confirm": "Confirm Checkout",
+    "cancel": "Cancel",
+    "success": "Enjoy your book!",
+    "dueDate": "Return by {{date}}",
+    "returningIn": "Returning to home in {{seconds}} seconds…",
+    "inactive": "Still there?",
+    "inactiveSubtitle": "We'll return to the home screen in {{seconds}} seconds.",
+    "imHere": "Yes, I'm here"
   }
 }

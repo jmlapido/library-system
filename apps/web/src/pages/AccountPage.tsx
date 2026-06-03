@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/auth';
 import { i18n } from '../i18n/index';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
 /** Account page with user profile, language toggle, push notification toggle, and sign out. */
 export function AccountPage() {
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const currentLang = i18n.language;
@@ -40,7 +42,7 @@ export function AccountPage() {
         {user?.gradeLevel && <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{user.gradeLevel}</div>}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <SettingRow label="Language" value={currentLang === 'en' ? 'English' : 'Filipino'} onPress={toggleLanguage} />
+        <SettingRow label={t('account.language')} value={currentLang === 'en' ? 'English' : 'Filipino'} onPress={toggleLanguage} />
         {isSupported && (
           <PushNotificationRow
             isSubscribed={isSubscribed}
@@ -59,7 +61,7 @@ export function AccountPage() {
       <button onClick={handleLogout} style={{ width: '100%', marginTop: 40, padding: 14, borderRadius: 10,
         background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)',
         color: '#fca5a5', fontWeight: 600, fontSize: 15, cursor: 'pointer' }}>
-        Sign Out
+        {t('account.signOut')}
       </button>
     </div>
   );
@@ -80,13 +82,14 @@ function PushNotificationRow({ isSubscribed, isLoading, onToggle }: {
   isLoading: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)',
       borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div>
-        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>Push Notifications</div>
+        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>{t('account.pushNotifications')}</div>
         <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, marginTop: 2 }}>
-          Due date reminders and hold alerts
+          {t('account.pushSubtitle')}
         </div>
       </div>
       <button
@@ -100,7 +103,7 @@ function PushNotificationRow({ isSubscribed, isLoading, onToggle }: {
           opacity: isLoading ? 0.6 : 1,
         }}
       >
-        {isLoading ? '...' : isSubscribed ? 'Disable' : 'Enable'}
+        {isLoading ? '...' : isSubscribed ? t('account.disable') : t('account.enable')}
       </button>
     </div>
   );
