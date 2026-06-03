@@ -1,9 +1,9 @@
 # LibraMS — Development Progress Tracker
 
-> Last updated: 2026-06-02
-> Branch: `master` | Tests: 500+ passing
-> Last commit: `48e8c29` — Phase 5 complete (Tasks 62–70)
-> Next: Phase 6 (Tasks 71–80) — Kiosk UI, teacher features, S3, i18n
+> Last updated: 2026-06-03
+> Branch: `master` | Tests: 399+ passing (api 350, web 49)
+> Last commit: `6d85b44` — fix: restore index.ts (Tasks 71-76 complete)
+> Next: Tasks 77-80 — student interests, S3/MinIO, i18n, RFID
 
 ---
 
@@ -233,7 +233,7 @@ Goal: Fill placeholder admin pages, add fine management, notification config, ho
 
 ---
 
-## Phase 6 — Kiosk UI, Teacher Features & Polish ⬜ PENDING (start in new session)
+## Phase 6 — Kiosk UI, Teacher Features & Polish 🔄 IN PROGRESS
 
 Goal: Build the kiosk surface (spec'd in detail), add school year/class section teacher workflow, S3 file storage, i18n.
 
@@ -241,18 +241,18 @@ Goal: Build the kiosk surface (spec'd in detail), add school year/class section 
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 71 | Kiosk base | `/kiosk` route in `apps/web`; attract/idle screen (animated book covers, school branding); guest mode; auto-logout countdown (configurable, default 2min) | ⬜ |
-| 72 | Kiosk AI search bar | Hero search bar; Framer Motion typewriter placeholder cycling English + Filipino examples; animated suggestion chips; chips refresh every 30s; bilingual per school language setting | ⬜ |
-| 73 | Kiosk checkout flow | Scan barcode (USB or camera) OR type call number; confirm book (cover + title + due date); "Confirm Checkout" tap; receipt display; auto-logout countdown | ⬜ |
+| 71 | Kiosk base | `/kiosk` route tree; KioskShell (idle detection, InactivityOverlay); AttractScreen (cover mosaic, bilingual CTA); KioskGuestHome; KioskLoginPage; KioskBookDetail | ✅ `8198667` |
+| 72 | Kiosk AI search bar | KioskSearchBar: typewriter placeholder (8 bilingual examples), animated suggestion chips (staggered fade-in), onSearch callback | ✅ `8198667` |
+| 73 | Kiosk checkout flow | KioskCheckoutFlow: 3-step wizard (scanning → confirming → success), receipt card, 10s auto-return countdown | ✅ `8198667` |
 
 ### Group W: Teacher & School Year Features
 
 | # | Task | What it covers | Status |
 |---|------|----------------|--------|
-| 74 | School year management | `school_years` table + API; admin UI (create, set active, archive); year lifecycle (active → archived at end date) | ⬜ |
-| 75 | Class sections | `class_sections` table; teacher CRUD — create section, add/remove students, multi-teacher access; year archiving; admin UI + teacher portal | ⬜ |
-| 76 | Teacher-referred books | Assign required/optional reading per section + school year; required/optional flag + teacher note; student kiosk shows "📚 Recommended by your teacher" | ⬜ |
-| 77 | Student interest onboarding | First-login interest-setting screen (interest chip grid: Space, Animals, Mystery, Sports…); stored on user profile; used by AI recommendation engine | ⬜ |
+| 74 | School year management | `school_years` table + API (list/create/update/activate/delete); SchoolYearsPage admin UI | ✅ `981491d` |
+| 75 | Class sections | `class_sections` + junction tables; full CRUD + teacher/student roster management; ClassSectionsPage admin UI with detail drawer | ✅ `981491d` |
+| 76 | Teacher-referred books | `section_book_assignments` table (required/optional); GET/POST/DELETE `/class-sections/:id/books`; `GET /class-sections/my/assigned-books` for students; migration 0015 | ✅ `15fe38f` |
+| 77 | Student interest onboarding | First-login interest chip screen; `users.interests` JSONB column (migration 0015) | ⬜ |
 
 ### Group X: Polish & Infrastructure
 
@@ -268,15 +268,14 @@ Goal: Build the kiosk surface (spec'd in detail), add school year/class section 
 
 | Metric | Count |
 |--------|-------|
-| Phases complete | **5 / 6** |
-| Tasks complete | **70** |
-| Tasks remaining | **10 (Tasks 71–80)** |
-| API test files | 32 |
-| API tests passing | **328** |
-| Admin tests passing | **92** |
+| Phases complete | **5.5 / 6** |
+| Tasks complete | **76** |
+| Tasks remaining | **4 (Tasks 77–80)** |
+| API tests passing | **350** |
+| Admin tests passing | **122** |
 | Web tests passing | **49** |
-| **Total tests** | **469** |
-| DB migrations | 12 (0000–0011) |
+| **Total tests** | **521** |
+| DB migrations | 15 (0000–0015) |
 | DB tables | 25+ |
 | API endpoints live | 80+ |
 | Roles | student · teacher · librarian · library_assistant · admin · super_admin |
