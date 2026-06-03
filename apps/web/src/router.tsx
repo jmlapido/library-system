@@ -13,6 +13,7 @@ import { BookClubsPage } from './pages/BookClubsPage';
 import { BookClubDetailPage } from './pages/BookClubDetailPage';
 import { AchievementsPage } from './pages/AchievementsPage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { RfidScanPage } from './pages/RfidScanPage';
 import { KioskShell } from './kiosk/KioskShell';
 import { AttractScreen } from './kiosk/AttractScreen';
 import { KioskGuestHome } from './kiosk/KioskGuestHome';
@@ -75,6 +76,7 @@ export const router = createBrowserRouter([
           { path: '/book-clubs', element: <BookClubsPage /> },
           { path: '/book-clubs/:id', element: <BookClubDetailPage /> },
           { path: '/achievements', element: <AchievementsPage /> },
+          { path: '/rfid', element: <RfidScanPage /> },
         ],
       },
     ],
