@@ -41,7 +41,6 @@ export function CheckoutTab() {
   const [searchResults, setSearchResults] = useState<StudentResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
-  const [successDueDate, setSuccessDueDate] = useState<string | null>(null);
   const [studentLoading, setStudentLoading] = useState(false);
   const [bookLoading, setBookLoading] = useState(false);
 
@@ -96,9 +95,6 @@ export function CheckoutTab() {
         barcode: copy!.copy.barcode,
         userId: student!.id,
       }),
-    onSuccess: (res) => {
-      setSuccessDueDate((res as unknown as { dueDate: string }).dueDate ?? null);
-    },
   });
 
   const handleScan = useCallback(
@@ -111,7 +107,6 @@ export function CheckoutTab() {
         lookupBook(barcode);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [stage]
   );
 
@@ -127,7 +122,6 @@ export function CheckoutTab() {
     setBookError('');
     setSearchResults([]);
     setShowDropdown(false);
-    setSuccessDueDate(null);
     checkoutMutation.reset();
   }
 
@@ -137,8 +131,8 @@ export function CheckoutTab() {
         <Alert>
           <AlertDescription>
             <strong>Checkout successful!</strong>{' '}
-            {successDueDate
-              ? `Due: ${new Date(successDueDate).toLocaleDateString()}`
+            {checkoutMutation.data?.dueDate
+              ? `Due: ${new Date(checkoutMutation.data.dueDate).toLocaleDateString()}`
               : 'Book checked out.'}
           </AlertDescription>
         </Alert>
