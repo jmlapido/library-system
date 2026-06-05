@@ -54,6 +54,8 @@ const bookSchema = z.object({
   readingLevel: z.string().optional(),
   description: z.string().optional(),
   callNumber: z.string().optional(),
+  firstCopyBarcode: z.string().optional(),
+  coverUrl: z.string().optional(),
 });
 
 type BookFormData = z.infer<typeof bookSchema>;
@@ -62,9 +64,10 @@ interface IsbnLookupData {
   title?: string;
   author?: string;
   publisher?: string;
-  year?: number;
+  publicationYear?: number;
   description?: string;
   coverUrl?: string;
+  genre?: string;
   isbn?: string;
 }
 
@@ -84,17 +87,24 @@ async function fetchIsbnMetadata(isbn: string): Promise<IsbnLookupData> {
 
 /** Submits the form data to create a new book. */
 async function createBook(data: BookFormData): Promise<Book> {
+  const { year, callNumber, firstCopyBarcode, coverUrl, ...rest } = data;
   return api.post<Book>('/catalog/books', {
-    ...data,
-    year: data.year ? parseInt(data.year, 10) : undefined,
+    ...rest,
+    publicationYear: year ? parseInt(year, 10) : undefined,
+    deweyDecimal: callNumber || undefined,
+    coverUrl: coverUrl || undefined,
+    firstCopyBarcode: firstCopyBarcode!,
   });
 }
 
 /** Submits the form data to update an existing book. */
 async function updateBook(id: string, data: BookFormData): Promise<Book> {
+  const { year, callNumber, firstCopyBarcode: _omit, coverUrl, ...rest } = data;
   return api.patch<Book>(`/catalog/books/${id}`, {
-    ...data,
-    year: data.year ? parseInt(data.year, 10) : undefined,
+    ...rest,
+    publicationYear: year ? parseInt(year, 10) : undefined,
+    deweyDecimal: callNumber || undefined,
+    coverUrl: coverUrl || undefined,
   });
 }
 
@@ -129,6 +139,7 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
   }, [book, reset]);
 
   const isbnValue = watch('isbn');
+  const fetchedCoverUrl = watch('coverUrl');
 
   /** Handles ISBN lookup and fills form fields with returned metadata. */
   async function handleIsbnFetch() {
@@ -143,8 +154,10 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
       if (meta.title) setValue('title', meta.title);
       if (meta.author) setValue('author', meta.author);
       if (meta.publisher) setValue('publisher', meta.publisher);
-      if (meta.year) setValue('year', String(meta.year));
+      if (meta.publicationYear) setValue('year', String(meta.publicationYear));
       if (meta.description) setValue('description', meta.description);
+      if (meta.genre) setValue('genre', meta.genre);
+      if (meta.coverUrl) setValue('coverUrl', meta.coverUrl);
       toast({ title: 'Metadata fetched from ISBN' });
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : 'ISBN lookup failed';
@@ -189,6 +202,10 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
 
   /** Submits the form; calls create or update endpoint depending on mode. */
   async function onSubmit(data: BookFormData) {
+    if (!isEdit && !data.firstCopyBarcode?.trim()) {
+      toast({ title: 'Barcode is required for the first copy', variant: 'destructive' });
+      return;
+    }
     setSubmitting(true);
     try {
       if (isEdit && book) {
@@ -216,6 +233,26 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {!isEdit && fetchedCoverUrl && (
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-28 rounded border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                <img src={fetchedCoverUrl} alt="Cover" className="w-full h-full object-cover" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Book Cover</Label>
+                <p className="text-xs text-muted-foreground">Fetched from ISBN</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setValue('coverUrl', '')}
+                >
+                  Remove cover
+                </Button>
+              </div>
+            </div>
+          )}
+
           {isEdit && (
             <div className="flex items-center gap-4">
               <div className="w-20 h-28 rounded border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -294,6 +331,12 @@ export function AddEditBookDialog({ open, onOpenChange, book, onSuccess }: Props
             </FieldRow>
           </div>
 
+          {!isEdit && (
+            <FieldRow label="Barcode (first copy) *" error={errors.firstCopyBarcode?.message}>
+              <Input {...register('firstCopyBarcode')} placeholder="Scan or enter barcode" />
+            </FieldRow>
+          )}
+
           <FieldRow label="Description" error={errors.description?.message}>
             <textarea
               {...register('description')}
@@ -339,6 +382,8 @@ function buildDefaults(book?: Book | null): BookFormData {
       readingLevel: '',
       description: '',
       callNumber: '',
+      firstCopyBarcode: '',
+      coverUrl: '',
     };
   }
   return {
@@ -351,6 +396,8 @@ function buildDefaults(book?: Book | null): BookFormData {
     readingLevel: book.readingLevel ?? '',
     description: book.description ?? '',
     callNumber: book.callNumber ?? '',
+    firstCopyBarcode: '',
+    coverUrl: book.coverUrl ?? '',
   };
 }
 

@@ -6,6 +6,18 @@ import type { AccessTokenPayload } from '../lib/jwt.js';
 
 type Variables = { user: AccessTokenPayload };
 
+/** GET /api/v1/analytics/dashboard */
+export async function getDashboardController(c: Context<{ Variables: Variables }>) {
+  const user = c.get('user');
+  try {
+    const data = await analyticsService.getDashboardData(user.schoolId!);
+    return c.json({ success: true, data });
+  } catch (err) {
+    if (err instanceof AppError) return c.json({ success: false, error: err.message, code: err.code }, 400);
+    throw err;
+  }
+}
+
 // ─── Query param schemas ──────────────────────────────────────────────────────
 
 const PopularQuerySchema = z.object({

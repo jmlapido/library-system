@@ -18,6 +18,11 @@ let indexReady = false;
 
 async function ensureIndex(): Promise<void> {
   if (indexReady) return;
+  // Set primaryKey explicitly — Meilisearch can't auto-detect when both 'id' and 'schoolId' exist
+  const idx = await meili.getIndex(BOOKS_INDEX).catch(() => null);
+  if (!idx || idx.primaryKey === null) {
+    await meili.index(BOOKS_INDEX).update({ primaryKey: 'id' });
+  }
   await meili.index(BOOKS_INDEX).updateSettings({
     searchableAttributes: ['title', 'author', 'isbn', 'description', 'genre', 'category', 'subjectTags'],
     filterableAttributes: ['schoolId', 'genre', 'category', 'language', 'readingLevel', 'availableCopies'],
@@ -90,7 +95,7 @@ export async function refreshBookIndex(bookId: string): Promise<void> {
   const copies = await db.select({ status: bookInventory.status })
     .from(bookInventory).where(eq(bookInventory.bookId, bookId));
   const available = copies.filter((c) => c.status === 'available').length;
-  await meili.index(BOOKS_INDEX).addDocuments([buildDocument(book, available, copies.length)]);
+  await meili.index(BOOKS_INDEX).addDocuments([buildDocument(book, available, copies.length)], { primaryKey: 'id' });
 }
 
 /**
@@ -100,10 +105,16 @@ export async function createBook(input: CreateBookInput, schoolId: string) {
   await ensureIndex();
 
   if (input.isbn) {
-    const [existing] = await db.select({ id: books.id }).from(books).where(
-      and(eq(books.isbn, input.isbn), eq(books.schoolId, schoolId), eq(books.isDeleted, false))
+    const [existing] = await db.select({ id: books.id, isDeleted: books.isDeleted }).from(books).where(
+      and(eq(books.isbn, input.isbn), eq(books.schoolId, schoolId))
     );
-    if (existing) throw new AppError('DUPLICATE_ISBN', 'A book with this ISBN already exists');
+    if (existing) {
+      if (!existing.isDeleted) throw new AppError('DUPLICATE_ISBN', 'A book with this ISBN already exists');
+      // Soft-deleted duplicate — hard-delete it so the unique constraint allows re-creation
+      await db.delete(bookInventory).where(eq(bookInventory.bookId, existing.id));
+      await db.delete(books).where(eq(books.id, existing.id));
+      await meili.index(BOOKS_INDEX).deleteDocument(existing.id).catch(() => undefined);
+    }
   }
 
   const { firstCopyBarcode, firstCopyCondition, firstCopyLocation, ...bookData } = input;
@@ -120,7 +131,8 @@ export async function createBook(input: CreateBookInput, schoolId: string) {
     status: 'available',
   }).returning())[0]!;
 
-  await meili.index(BOOKS_INDEX).addDocuments([buildDocument(book, 1, 1)]);
+  const task = await meili.index(BOOKS_INDEX).addDocuments([buildDocument(book, 1, 1)], { primaryKey: 'id' });
+  await meili.waitForTask(task.taskUid);
 
   generateEmbedding(buildBookText({ title: book.title, author: book.author, description: book.description ?? null, genre: book.genre ?? null }))
     .then((vec) => vec ? storeBookEmbedding(book.id, vec) : undefined)

@@ -1,5 +1,17 @@
 import axios from 'axios';
 
+/** Strip HTML tags, entities, URLs, and excess whitespace from a description string. */
+function cleanDescription(raw: string): string {
+  return raw
+    .replace(/<[^>]+>/g, ' ')                          // remove HTML tags
+    .replace(/https?:\/\/\S+/g, '')                    // remove URLs
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>') // common entities
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&[a-z]+;/gi, '') // remaining entities
+    .replace(/\r\n|\r/g, '\n')                         // normalise line endings
+    .replace(/\n{3,}/g, '\n\n')                        // collapse excess blank lines
+    .trim();
+}
+
 export interface IsbnMetadata {
   isbn: string;
   title: string;
@@ -60,7 +72,7 @@ async function lookupGoogleBooks(isbn: string): Promise<IsbnMetadata | null> {
     author: info.authors?.join(', ') ?? 'Unknown',
     ...(info.publisher !== undefined && { publisher: info.publisher }),
     ...(year !== undefined && { publicationYear: year }),
-    ...(info.description !== undefined && { description: info.description }),
+    ...(info.description !== undefined && { description: cleanDescription(info.description) }),
     ...(coverUrl !== undefined && { coverUrl }),
     ...(info.categories?.[0] !== undefined && { genre: info.categories[0] }),
     ...(info.categories !== undefined && { subjectTags: info.categories }),
@@ -78,6 +90,29 @@ interface OpenLibraryEntry {
   number_of_pages?: number;
   subjects?: Array<{ name?: string }>;
   cover?: { large?: string; medium?: string };
+  identifiers?: { openlibrary?: string[] };
+}
+
+interface OpenLibraryEdition {
+  works?: Array<{ key: string }>;
+}
+
+interface OpenLibraryWork {
+  description?: string | { value?: string };
+}
+
+/** Fetch description from the work record when the edition has no notes. */
+async function fetchWorkDescription(baseUrl: string, editionKey: string): Promise<string | undefined> {
+  try {
+    const editionResp = await axios.get<OpenLibraryEdition>(`${baseUrl}/books/${editionKey}.json`, { timeout: 5000 });
+    const workKey = editionResp.data.works?.[0]?.key;
+    if (!workKey) return undefined;
+    const workResp = await axios.get<OpenLibraryWork>(`${baseUrl}${workKey}.json`, { timeout: 5000 });
+    const desc = workResp.data.description;
+    return typeof desc === 'string' ? desc : desc?.value;
+  } catch {
+    return undefined;
+  }
 }
 
 /** Fallback: Open Library Books API. */
@@ -101,13 +136,17 @@ async function lookupOpenLibrary(isbn: string): Promise<IsbnMetadata | null> {
   const publisher = entry.publishers?.[0]?.name;
   const coverUrl = entry.cover?.large ?? entry.cover?.medium;
 
+  const editionKey = entry.identifiers?.openlibrary?.[0];
+  const rawDescription = notes ?? (editionKey ? await fetchWorkDescription(baseUrl, editionKey) : undefined);
+  const description = rawDescription ? cleanDescription(rawDescription) : undefined;
+
   return {
     isbn,
     title: entry.title,
     author: entry.authors?.map((a) => a.name).filter((n): n is string => n !== undefined).join(', ') || 'Unknown',
     ...(publisher !== undefined && { publisher }),
     ...(year !== undefined && { publicationYear: year }),
-    ...(notes !== undefined && { description: notes }),
+    ...(description !== undefined && { description }),
     ...(coverUrl !== undefined && { coverUrl }),
     ...(tags !== undefined && tags.length > 0 && { subjectTags: tags, genre: tags[0] }),
     ...(entry.number_of_pages !== undefined && { pageCount: entry.number_of_pages }),

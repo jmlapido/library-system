@@ -1,10 +1,18 @@
-import { sql, eq, and, lt, gte, count, desc } from 'drizzle-orm';
+import { sql, eq, and, lt, count, desc } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { users } from '../db/schema/users.js';
 import { books, bookInventory } from '../db/schema/books.js';
 import { checkouts, holds } from '../db/schema/circulation.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface DashboardData {
+  checkoutsToday: number;
+  currentlyOverdue: number;
+  activeHolds: number;
+  booksOutNow: number;
+  recentActivity: Array<{ type: 'checkout' | 'return'; bookTitle: string; userName: string; timestamp: string }>;
+}
 
 export interface AdminStats {
   totalBooks: number;
@@ -119,6 +127,72 @@ export async function getAdminStats(schoolId: string): Promise<AdminStats> {
     overdueCheckouts: Number(overdueRow?.n ?? 0),
     holdsWaiting: Number(holdsRow?.n ?? 0),
     booksAvailable: Number(availableRow?.n ?? 0),
+  };
+}
+
+/**
+ * Return dashboard summary metrics and recent activity for a school.
+ */
+export async function getDashboardData(schoolId: string): Promise<DashboardData> {
+  const [todayRow] = await db
+    .select({ n: count(checkouts.id) })
+    .from(checkouts)
+    .innerJoin(bookInventory, eq(checkouts.bookInventoryId, bookInventory.id))
+    .where(and(
+      eq(bookInventory.schoolId, schoolId),
+      sql`DATE(${checkouts.checkoutDate}) = CURRENT_DATE`,
+    ));
+
+  const [overdueRow] = await db
+    .select({ n: count(checkouts.id) })
+    .from(checkouts)
+    .innerJoin(bookInventory, eq(checkouts.bookInventoryId, bookInventory.id))
+    .where(and(
+      eq(bookInventory.schoolId, schoolId),
+      sql`(${checkouts.status} = 'overdue' OR (${checkouts.status} = 'checked_out' AND ${checkouts.dueDate} < NOW()))`,
+    ));
+
+  const [holdsRow] = await db
+    .select({ n: count(holds.id) })
+    .from(holds)
+    .innerJoin(books, eq(holds.bookId, books.id))
+    .where(and(eq(books.schoolId, schoolId), sql`${holds.status} IN ('pending', 'ready')`));
+
+  const [booksOutRow] = await db
+    .select({ n: count(checkouts.id) })
+    .from(checkouts)
+    .innerJoin(bookInventory, eq(checkouts.bookInventoryId, bookInventory.id))
+    .where(and(eq(bookInventory.schoolId, schoolId), eq(checkouts.status, 'checked_out')));
+
+  const recent = await db
+    .select({
+      status: checkouts.status,
+      bookTitle: books.title,
+      userName: users.fullName,
+      checkoutDate: checkouts.checkoutDate,
+      returnDate: checkouts.returnDate,
+    })
+    .from(checkouts)
+    .innerJoin(bookInventory, eq(checkouts.bookInventoryId, bookInventory.id))
+    .innerJoin(books, eq(bookInventory.bookId, books.id))
+    .innerJoin(users, eq(checkouts.userId, users.id))
+    .where(eq(bookInventory.schoolId, schoolId))
+    .orderBy(desc(checkouts.checkoutDate))
+    .limit(20);
+
+  const recentActivity = recent.map((r) => ({
+    type: (r.returnDate ? 'return' : 'checkout') as 'checkout' | 'return',
+    bookTitle: r.bookTitle,
+    userName: r.userName,
+    timestamp: (r.returnDate ?? r.checkoutDate).toISOString(),
+  }));
+
+  return {
+    checkoutsToday: Number(todayRow?.n ?? 0),
+    currentlyOverdue: Number(overdueRow?.n ?? 0),
+    activeHolds: Number(holdsRow?.n ?? 0),
+    booksOutNow: Number(booksOutRow?.n ?? 0),
+    recentActivity,
   };
 }
 

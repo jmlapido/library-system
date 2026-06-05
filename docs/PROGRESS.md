@@ -1,9 +1,9 @@
 # LibraMS — Development Progress Tracker
 
-> Last updated: 2026-06-03
+> Last updated: 2026-06-05
 > Branch: `master` | Tests: 521 passing (api 350, admin 122, web 49)
 > Last commit: `df03736` — Phase 6 complete (Tasks 77–80 done)
-> **Phase 6 COMPLETE — all 80 tasks done**
+> **Phase 6 COMPLETE — all 80 tasks done | Post-phase P1–P7 complete | Bug fixes applied**
 
 ---
 
@@ -261,6 +261,44 @@ Goal: Build the kiosk surface (spec'd in detail), add school year/class section 
 | 78 | Book cover uploads + S3/MinIO | MinIO in docker-compose; storage.service.ts (S3Client forcePathStyle); PATCH /catalog/books/:id/cover (multipart, 5MB, JPEG/PNG/WebP/GIF); admin dialog cover preview+upload | ✅ `dd40322` |
 | 79 | i18n Filipino strings | Extended en.json+tl.json (onboarding, readingLists, bookClubs, achievements, kiosk); useTranslation wired in LoginPage, AccountPage, OnboardingPage | ✅ `badcbb6` |
 | 80 | RFID Web USB API | useRfidReader hook (ISO 15693 inventory+read commands, UID+bookId+copyNumber decode); RfidScanPage at /rfid; @types/w3c-web-usb; auto-navigate to /book/:id on read | ✅ `df03736` |
+
+---
+
+## Post-Phase 6 — Data Management & UX Improvements ✅ COMPLETE (2026-06-05)
+
+Goal: Fill data entry gaps and add student self-service account management.
+
+### Group Y: Student & Teacher Data Entry
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| P1 | Individual student creation | `AddStudentDialog` on Students page; `POST /admin/students`; returns generated PIN; form: name, student ID, grade, email (optional), PIN (optional) | ✅ |
+| P2 | Teacher bulk import | Teachers tab on Bulk Import page; CSV `fullName,email`; `POST /teachers/import`; invite email sent per teacher | ✅ |
+| P3 | Teacher individual add | `AddTeacherDialog` + `FacultyTab` in Staff Management; separate Library Staff / Faculty / Pending tabs | ✅ |
+| P4 | Admin staff endpoint fixes | `GET /admin/students` route wired up; `GET /admin/staff?role=` filter param; StudentSchema email validation fix | ✅ |
+
+### Group Z: Student Account Self-Service
+
+| # | Task | What it covers | Status |
+|---|------|----------------|--------|
+| P5 | `PATCH /users/me` API | Update email, password, PIN; current credential verification before save | ✅ |
+| P6 | Web portal AccountPage — profile edit | Add Email, Set Password, Change PIN sections; student self-completes profile after kiosk PIN login | ✅ |
+| P7 | Kiosk account settings | `/kiosk/account` page with PIN/Password/Email tabs; touchscreen-optimised; "Account Settings" button in checkout flow | ✅ |
+
+---
+
+## Post-Phase Bug Fixes (2026-06-05)
+
+| # | Fix | Files changed |
+|---|-----|---------------|
+| B1 | Catalog 422 — field mapping (`year→publicationYear`, `callNumber→deweyDecimal`) + required `firstCopyBarcode` field | `AddEditBookDialog.tsx` |
+| B2 | Meilisearch indexing — explicit `primaryKey: 'id'` on all `addDocuments` + `waitForTask` in `createBook` | `catalog.service.ts` |
+| B3 | ISBN metadata — fixed interface fields, cover preview + remove button, `cleanDescription()` strips HTML/entities/URLs | `AddEditBookDialog.tsx`, `isbn.ts` |
+| B4 | Open Library description — work-level fallback (edition → work key → description) | `isbn.ts` |
+| B5 | Duplicate ISBN 500 — hard-delete soft-deleted duplicate + inventory + Meilisearch doc before re-insert | `catalog.service.ts` |
+| B6 | CORS — added ports 5175–5179 to `CORS_ORIGIN` in `apps/api/.env` | `apps/api/.env` |
+| B7 | Dashboard 404 — added `GET /api/v1/analytics/dashboard` route + `getDashboardData()` service | `analytics.service.ts`, `analytics.controller.ts`, `routes/analytics.ts` |
+| B8 | Dashboard 500 — wrong Drizzle field names (`checkedOutAt→checkoutDate`, `returnedAt→returnDate`) | `analytics.service.ts` |
 
 ---
 

@@ -29,7 +29,7 @@ interface SearchResponse {
 /** Fetches books from catalog search endpoint. */
 async function searchBooks(query: string): Promise<Book[]> {
   const params = new URLSearchParams({ q: query, limit: '50' });
-  const result = await api.get<SearchResponse>(`/catalog/search?${params}`);
+  const result = await api.get<SearchResponse>(`/catalog/books?${params}`);
   return result.hits;
 }
 
